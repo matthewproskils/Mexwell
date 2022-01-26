@@ -10,6 +10,13 @@ using std::vector, std::string, std::regex, std::map, std::make_pair, std::pair;
 
 #pragma once
 
+template <typename Enumeration>
+auto as_integer(Enumeration const value)
+    -> typename std::underlying_type<Enumeration>::type
+{
+    return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+}
+
 class Parser
 {
 private:
@@ -28,9 +35,9 @@ public:
     FileLength = FileData.length();
   }
 
-  vector<pair<string, int>> ParseFile()
+  vector<pair<string, ParseTokenType>> ParseFile()
   {
-    vector<pair<string, int>> tokens = {};
+    vector<pair<string, ParseTokenType>> tokens = {};
 
     for (this->FileIndex = 0; FileIndex < FileLength;)
     {
@@ -39,7 +46,7 @@ public:
       }
       else if (std::count(OneLongToken.begin(), OneLongToken.end(), get()))
       {
-        int x = oneType();
+        ParseTokenType x = (ParseTokenType)oneType();
         tokens.push_back(make_pair(string(1, get()), x));
       }
       else if (slice(3) == "fun")
@@ -66,7 +73,7 @@ public:
 
     for (int i = 0; i < tokens.size(); i++)
     {
-      std::cout << tokens[i].first << " " << tokens[i].second << std::endl;
+      std::cout << tokens[i].first << " " << as_integer(tokens[i].second) << std::endl;
     }
 
     return tokens;
@@ -115,9 +122,9 @@ public:
     return Expression;
   }
 
-  int oneType()
+  ParseTokenType oneType()
   {
-    int x = 0;
+    ParseTokenType x = ParseTokenType::String;
     switch (get())
     {
     case '{':

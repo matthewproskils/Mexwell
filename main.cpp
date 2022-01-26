@@ -4,7 +4,7 @@
 int main(int argc, char const *argv[])
 {
   Parser *parser = new Parser("main.mx");
-  vector<pair<string, int>> Parsed = parser->ParseFile();
+  vector<pair<string, ParseTokenType>> Parsed = parser->ParseFile();
 
   Lexer *lexer = new Lexer(Parsed);
   vector<Token*> tokens = lexer->LexFile();

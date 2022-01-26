@@ -1,6 +1,6 @@
 #pragma once
 
-enum ParseTokenType
+enum class ParseTokenType
 {
   VarDecl,  // 0
   String, // 1

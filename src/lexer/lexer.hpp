@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "../parser/token.hpp"
 
 #pragma once
 
@@ -34,16 +35,23 @@ inline Token *Lexer::Expression()
     incPtr();
     if (getType() == ParseTokenType::Semicolon)
     {
+      // Standalone Variable
       incPtr();
       return new Token("Expression", new Token(Expr1, TokenType::SingleExpression));
     }
     else if (getType() == ParseTokenType::OpenBracket)
     {
+      // Array
+    }
+    else if (getType() == ParseTokenType::OpenParenthesis)
+    {
+      // Call Function
+      
     }
   }
 }
 
-inline string Lexer::Expects(int ExpectType, string ExpectStr)
+inline string Lexer::Expects(ParseTokenType ExpectType, string ExpectStr)
 {
   if (getType() == ExpectType)
   {

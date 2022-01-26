@@ -12,12 +12,12 @@ using std::string, std::vector, std::pair, std::make_pair;
 class Lexer
 {
 private:
-  vector<pair<string, int>> ParsedTokens;
+  vector<pair<string, ParseTokenType>> ParsedTokens;
   int ParsedIndex;
   vector<Token *> Lexed;
 
 public:
-  Lexer(vector<pair<string, int>> tokens)
+  Lexer(vector<pair<string, ParseTokenType>> tokens)
   {
     ParsedTokens = tokens;
     ParsedIndex = -1;
@@ -38,7 +38,7 @@ public:
 
   void Function();
 
-  int getType()
+  ParseTokenType getType()
   {
     if (ParsedIndex >= ParsedTokens.size())
     {
@@ -56,7 +56,7 @@ public:
     return ParsedTokens[ParsedIndex].first;
   }
 
-  string Expects(int ExpectType, string ExpectStr);
+  string Expects(ParseTokenType ExpectType, string ExpectStr);
 
   Token *getLast()
   {

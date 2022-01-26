@@ -5,7 +5,7 @@
 using std::string, std::map;
 #pragma once
 
-enum TokenType
+enum class TokenType
 {
   // Function
   FuncDeclaration,
@@ -20,11 +20,11 @@ enum TokenType
 
 class Token {
 public:
-  int type;
+  TokenType type;
   string value;
   map<string, Token*> Children = {};
 
-  Token(string Value, int Type) {
+  Token(string Value, TokenType Type) {
     type = Type;
     value = Value;
   }
