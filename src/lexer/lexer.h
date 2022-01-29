@@ -67,19 +67,5 @@ public:
 
   Token *Expression();
 
-  void Args(Token *args)
-  {
-    string argType = Expects(ParseTokenType::Expression, "Expression or Close Parenthesis");
-    incPtr();
-    string argValue = Expects(ParseTokenType::Expression, "Expression");
-    incPtr();
-
-    string argName = "Arg" + string(1, args->Children.size() + 1);
-
-    Token *arg = new Token(argName, TokenType::FunctionArgument);
-    arg->add_child("Value", new Token(argValue, TokenType::Expression));
-    arg->add_child("Type", new Token(argType, TokenType::Expression));
-
-    args->add_child(argName, arg);
-  }
+  void Args(Token *args);
 };

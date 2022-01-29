@@ -1,7 +1,14 @@
 #include "lexer.h"
 #include "../parser/token.hpp"
+#include <type_traits>
 
 #pragma once
+
+template <typename E>
+constexpr auto to_underlying(E e) noexcept
+{
+  return static_cast<std::underlying_type_t<E>>(e);
+}
 
 inline Token *Lexer::FuncArgs()
 {
@@ -9,17 +16,16 @@ inline Token *Lexer::FuncArgs()
 
   while (ParsedIndex < ParsedTokens.size())
   {
-    incPtr();
-
     if (getType() == ParseTokenType::CloseParenthesis)
     {
-      incPtr();
+      break;
     }
     else
     {
       Args(args);
     }
   }
+
   return args;
 }
 
@@ -37,7 +43,7 @@ inline Token *Lexer::Expression()
     {
       // Standalone Variable
       incPtr();
-      return new Token("Expression", new Token(Expr1, TokenType::SingleExpression));
+      return new Token(Expr1, TokenType::Expression);
     }
     else if (getType() == ParseTokenType::OpenBracket)
     {
@@ -46,7 +52,6 @@ inline Token *Lexer::Expression()
     else if (getType() == ParseTokenType::OpenParenthesis)
     {
       // Call Function
-      
     }
   }
 }
@@ -79,7 +84,11 @@ inline void Lexer::Function()
   Expects(ParseTokenType::OpenParenthesis, "Open Parenthesis");
   incPtr();
 
-  FuncArgs();
+  getLast()->add_child(
+      "FuncArgs",
+      FuncArgs());
+
+  incPtr();
 
   Expects(ParseTokenType::OpenCurlyBracket, "Bracket");
   incPtr();
@@ -94,7 +103,7 @@ inline void Lexer::Function()
 
 inline vector<Token *> Lexer::LexFile()
 {
-  while (ParsedIndex < ParsedTokens.size())
+  while (ParsedIndex > ParsedTokens.size())
   {
     incPtr();
 
@@ -105,4 +114,21 @@ inline vector<Token *> Lexer::LexFile()
   }
 
   return Lexed;
+}
+
+inline void Lexer::Args(Token *args)
+{
+  std::cout << to_underlying(getType()) << std::endl;
+  string argType = Expects(ParseTokenType::Expression, "Expression or Close Parenthesis");
+  incPtr();
+  string argValue = Expects(ParseTokenType::Expression, "Expression");
+  incPtr();
+
+  string argName = "Arg" + string(1, args->Children.size() + 1);
+
+  Token *arg = new Token(argName, TokenType::FunctionArgument);
+  arg->add_child("Value", new Token(argValue, TokenType::Expression));
+  arg->add_child("Type", new Token(argType, TokenType::Expression));
+
+  args->add_child(argName, arg);
 }
