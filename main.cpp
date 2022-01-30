@@ -12,7 +12,7 @@ std::string repeatTab(int i)
 
 void debugTokens(Token *t, int tab = 0)
 {
-  std::cout << repeatTab(tab) << "Value: " << t->value << repeatTab(tab) << "\nType : " << to_underlying(t->type) << std::endl;
+  std::cout << repeatTab(tab) << "Value: " << t->value << "\n" << repeatTab(tab) << "Type: " << to_underlying(t->type) << std::endl;
   map<std::string, Token *>::iterator it;
   for (it = t->Children.begin(); it != t->Children.end(); it++)
   {
