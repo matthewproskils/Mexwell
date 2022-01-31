@@ -36,7 +36,7 @@ public:
     }
   }
 
-  void Function();
+  Token* Function();
 
   ParseTokenType getType()
   {
@@ -67,5 +67,9 @@ public:
 
   Token *Expression();
 
+  Token *Variable();
+
+  Token *Value();
+  
   void Args(Token *args);
 };

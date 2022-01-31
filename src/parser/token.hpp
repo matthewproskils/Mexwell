@@ -12,5 +12,7 @@ enum class ParseTokenType
   OpenParenthesis, // 7
   CloseParenthesis, // 8
   Semicolon, // 9
-  FunDeclaration
+  FunDeclaration, // 10
+  EqualsSign, // 11
+  Number, // 12
 };

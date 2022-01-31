@@ -14,7 +14,7 @@ template <typename Enumeration>
 auto as_integer(Enumeration const value)
     -> typename std::underlying_type<Enumeration>::type
 {
-    return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+  return static_cast<typename std::underlying_type<Enumeration>::type>(value);
 }
 
 class Parser
@@ -23,7 +23,7 @@ private:
   string FileData;
   int FileIndex;
   int FileLength;
-  vector<char> OneLongToken = {'{', '}', '(', ')', '[', ']', ';'};
+  vector<char> OneLongToken = {'{', '}', '(', ')', '[', ']', ';', '='};
 
 public:
   Parser(const char *filename)
@@ -54,9 +54,15 @@ public:
         FileIndex += 2;
         tokens.push_back(make_pair("fun", ParseTokenType::FunDeclaration));
       }
-      else if (slice(3) == "var")
+      else if (slice(3) == "var" || slice(3) == "let")
       {
-        tokens.push_back(make_pair("var", ParseTokenType::VarDecl));
+        tokens.push_back(make_pair(slice(3), ParseTokenType::VarDecl));
+        FileIndex += 2;
+      }
+      else if (isdigit(get()))
+      {
+        tokens.push_back(make_pair(parse_number(), ParseTokenType::Number));
+        FileIndex--;
       }
       else if (get() == '"' || get() == '\'')
       {
@@ -122,6 +128,17 @@ public:
     return Expression;
   }
 
+  string parse_number()
+  {
+    string Number = "";
+    while (isdigit(get()))
+    {
+      Number.push_back(get());
+      FileIndex++;
+    }
+    return Number;
+  }
+
   ParseTokenType oneType()
   {
     ParseTokenType x = ParseTokenType::String;
@@ -147,6 +164,9 @@ public:
       break;
     case ';':
       x = ParseTokenType::Semicolon;
+      break;
+    case '=':
+      x = ParseTokenType::EqualsSign;
       break;
     default:
       std::cout << "Invalid token";

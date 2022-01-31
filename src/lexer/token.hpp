@@ -16,6 +16,10 @@ enum class TokenType
   Expression,
   SingleExpression,
   ExpressionCall,
+
+  //Variable
+  VariableDef,
+  VarType, //Var, Let, or Const
 };
 
 class Token {

@@ -69,9 +69,9 @@ inline string Lexer::Expects(ParseTokenType ExpectType, string ExpectStr)
   }
 }
 
-inline void Lexer::Function()
+inline Token* Lexer::Function()
 {
-  Lexed.push_back(new Token(getVal(), TokenType::FuncDeclaration));
+  Token* t = new Token(getVal(), TokenType::FuncDeclaration);
   incPtr();
 
   getLast()->add_child(
@@ -99,6 +99,8 @@ inline void Lexer::Function()
     expr++;
     getLast()->add_child("" + expr, Expression());
   }
+
+  return t;
 }
 
 inline vector<Token *> Lexer::LexFile()
@@ -109,7 +111,15 @@ inline vector<Token *> Lexer::LexFile()
 
     if (getType() == ParseTokenType::FunDeclaration)
     {
-      Function();
+      Lexed.push_back(Function());
+    }
+    else if (getType() == ParseTokenType::VarDecl)
+    {
+      Lexed.push_back(Variable());
+    }
+    else
+    {
+      std::cout << "Error: Unexpected Token " << getVal();
     }
   }
 
@@ -131,4 +141,25 @@ inline void Lexer::Args(Token *args)
   arg->add_child("Type", new Token(argType, TokenType::Expression));
 
   args->add_child(argName, arg);
+}
+
+inline Token* Lexer::Variable() {
+  Token *t = new Token(getVal(), TokenType::VariableDef);
+  incPtr();
+  Expects(ParseTokenType::Expression, "Variable Name");
+  t->add_child("Name", new Token(getVal(), TokenType::Expression));
+
+  incPtr();
+  Expects(ParseTokenType::EqualsSign, "EqualsSign");
+
+  
+  // t->add_child("Value", Value());
+
+  return t;
+}
+
+inline Token* Lexer::Value() {
+  if (getType() == ParseTokenType::Number) {
+
+  }
 }
