@@ -16,3 +16,14 @@ enum class ParseTokenType
   EqualsSign, // 11
   Number, // 12
 };
+
+class ParseToken
+{
+public:
+  ParseTokenType type;
+  string value;
+  int lineNumber;
+  int charNumber;
+
+  ParseToken(ParseTokenType type, string value, int lineNumber, int charNumber) : type(type), value(value), lineNumber(lineNumber), charNumber(charNumber) {}
+};

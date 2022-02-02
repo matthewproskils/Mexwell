@@ -1,3 +1,6 @@
+#ifndef PARSER_HPP
+#define PARSER_HPP
+
 #include "readfile.hpp"
 #include <string>
 #include <vector>
@@ -7,9 +10,6 @@
 #include "token.hpp"
 
 using std::vector, std::string, std::regex, std::map, std::make_pair, std::pair;
-
-#pragma once
-
 template <typename Enumeration>
 auto as_integer(Enumeration const value)
     -> typename std::underlying_type<Enumeration>::type
@@ -35,9 +35,9 @@ public:
     FileLength = FileData.length();
   }
 
-  vector<pair<string, ParseTokenType>> ParseFile()
+  vector<ParseToken*> ParseFile()
   {
-    vector<pair<string, ParseTokenType>> tokens = {};
+    vector<ParseToken*> tokens = {};
 
     for (this->FileIndex = 0; FileIndex < FileLength;)
     {
@@ -47,30 +47,30 @@ public:
       else if (std::count(OneLongToken.begin(), OneLongToken.end(), get()))
       {
         ParseTokenType x = (ParseTokenType)oneType();
-        tokens.push_back(make_pair(string(1, get()), x));
+        tokens.push_back(new ParseToken(x, string(1, get()), lineNumber(), charNumber()));
       }
       else if (slice(3) == "fun")
       {
         FileIndex += 2;
-        tokens.push_back(make_pair("fun", ParseTokenType::FunDeclaration));
+        tokens.push_back(new ParseToken(ParseTokenType::FunDeclaration, "fun", lineNumber(), charNumber()));
       }
       else if (slice(3) == "var" || slice(3) == "let")
       {
-        tokens.push_back(make_pair(slice(3), ParseTokenType::VarDecl));
+        tokens.push_back(new ParseToken(ParseTokenType::VarDecl, slice(3), lineNumber(), charNumber()));
         FileIndex += 2;
       }
       else if (isdigit(get()))
       {
-        tokens.push_back(make_pair(parse_number(), ParseTokenType::Number));
+        tokens.push_back(new ParseToken(ParseTokenType::Number, parse_number(), lineNumber(), charNumber()));
         FileIndex--;
       }
       else if (get() == '"' || get() == '\'')
       {
-        tokens.push_back(make_pair(parse_string(), ParseTokenType::String));
+        tokens.push_back(new ParseToken(ParseTokenType::String, parse_string(), lineNumber(), charNumber()));
       }
       else if (isalpha(get()) || get() == '_')
       {
-        tokens.push_back(make_pair(parse_expression(), ParseTokenType::Expression));
+        tokens.push_back(new ParseToken(ParseTokenType::Expression, parse_expression(), lineNumber(), charNumber()));
         FileIndex--;
       }
 
@@ -79,7 +79,7 @@ public:
 
     for (int i = 0; i < tokens.size(); i++)
     {
-      std::cout << tokens[i].first << " " << as_integer(tokens[i].second) << std::endl;
+      std::cout << "Line: " << tokens[i]->lineNumber << ", Character: " << tokens[i]->charNumber << ", Type: " << as_integer(tokens[i]->type) << ", Value: " << tokens[i]->value  << std::endl;
     }
 
     return tokens;
@@ -174,4 +174,28 @@ public:
     }
     return x;
   }
+
+  int lineNumber() {
+    int newlines = 0;
+    for (int i = 0; i < FileIndex; i++) {
+      if (FileData[i] == '\n') {
+        newlines++;
+      }
+    }
+    return newlines + 1;
+  }
+
+  int charNumber() {
+    // Go backwards from fileIndex until you find a newline
+    int newlines = 0;
+    int i = FileIndex;
+    for (; i > 0; i--) {
+      if (FileData[i] == '\n') {
+        newlines++;
+      }
+    }
+    return FileIndex - i;
+  }
 };
+
+#endif // PARSER_HPP

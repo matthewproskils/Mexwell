@@ -1,5 +1,6 @@
 #include "src/parser/parser.hpp"
 #include "src/lexer/lexer.hpp"
+#include "src/compiler/compiler.hpp"
 
 std::string repeatTab(int i)
 {
@@ -24,15 +25,15 @@ void debugTokens(Token *t, int tab = 0)
 int main(int argc, char const *argv[])
 {
   Parser *parser = new Parser("main.mx");
-  vector<pair<string, ParseTokenType>> Parsed = parser->ParseFile();
+  vector<ParseToken*> Parsed = parser->ParseFile();
 
-  Lexer *lexer = new Lexer(Parsed);
-  vector<Token *> tokens = lexer->LexFile();
+  // Lexer *lexer = new Lexer(Parsed);
+  // vector<Token *> tokens = lexer->LexFile();
 
-  for (size_t i = 0; i < tokens.size(); i++)
-  {
-    debugTokens(tokens[i]);
-  }
+  // for (size_t i = 0; i < tokens.size(); i++)
+  // {
+  //   debugTokens(tokens[i]);
+  // }
 
   return 0;
 }
