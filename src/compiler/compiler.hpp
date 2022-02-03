@@ -6,5 +6,11 @@ inline Compiler::Compiler(vector<Token *> tokens) {
 }
 
 inline void Compiler::compile() {
+  Scope *global = new Scope(nullptr);
+  Scope *current = global;
   
+  this->ParsedIndex = 0;
+  while (this->ParsedIndex < this->tokens.size()) {
+    
+  }
 }

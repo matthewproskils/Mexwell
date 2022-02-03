@@ -20,18 +20,21 @@ enum class TokenType
   //Variable
   VariableDef,
   VarType, //Var, Let, or Const
+
+  //Types
+  Number,
+  
 };
 
 class Token {
 public:
   TokenType type;
   string value;
+  int lineNumber;
+  int charNumber;
   map<string, Token*> Children = {};
 
-  Token(string Value, TokenType Type) {
-    type = Type;
-    value = Value;
-  }
+  Token(string Value, TokenType Type, int LineNumber, int CharNumber) : value(Value), lineNumber(LineNumber), charNumber(CharNumber), type(Type) {}
 
   void add_child(string name, Token* token) {
     Children.insert(std::pair<string, Token*>(name, token));

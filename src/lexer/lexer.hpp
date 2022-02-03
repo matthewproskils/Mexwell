@@ -12,7 +12,7 @@ constexpr auto to_underlying(E e) noexcept
 
 inline Token *Lexer::FuncArgs()
 {
-  Token *args = new Token("FuncArgs", TokenType::FuncArgumentWrapper);
+  Token *args = new Token("FuncArgs", TokenType::FuncArgumentWrapper, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
 
   while (ParsedIndex < ParsedTokens.size())
   {
@@ -43,7 +43,7 @@ inline Token *Lexer::Expression()
     {
       // Standalone Variable
       incPtr();
-      return new Token(Expr1, TokenType::Expression);
+      return new Token(Expr1, TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
     }
     else if (getType() == ParseTokenType::OpenBracket)
     {
@@ -69,22 +69,28 @@ inline string Lexer::Expects(ParseTokenType ExpectType, string ExpectStr)
   }
 }
 
-inline Token* Lexer::Function()
+inline Token *Lexer::Function()
 {
-  Token* t = new Token(getVal(), TokenType::FuncDeclaration);
+  Token *t = new Token(
+      getVal(),
+      TokenType::FuncDeclaration,
+      ParsedTokens[ParsedIndex]->lineNumber,
+      ParsedTokens[ParsedIndex]->charNumber);
   incPtr();
 
-  getLast()->add_child(
+  t->add_child(
       "FuncName",
       new Token(
           Expects(ParseTokenType::Expression, "Expression"),
-          TokenType::FuncDeclaration));
+          TokenType::FuncDeclaration,
+          ParsedTokens[ParsedIndex]->lineNumber,
+          ParsedTokens[ParsedIndex]->charNumber));
   incPtr();
 
   Expects(ParseTokenType::OpenParenthesis, "Open Parenthesis");
   incPtr();
 
-  getLast()->add_child(
+  t->add_child(
       "FuncArgs",
       FuncArgs());
 
@@ -97,7 +103,7 @@ inline Token* Lexer::Function()
   while (getType() != ParseTokenType::CloseCurlyBracket)
   {
     expr++;
-    getLast()->add_child("" + expr, Expression());
+    t->add_child("" + expr, Expression());
   }
 
   return t;
@@ -136,30 +142,55 @@ inline void Lexer::Args(Token *args)
 
   string argName = "Arg" + string(1, args->Children.size() + 1);
 
-  Token *arg = new Token(argName, TokenType::FunctionArgument);
-  arg->add_child("Value", new Token(argValue, TokenType::Expression));
-  arg->add_child("Type", new Token(argType, TokenType::Expression));
+  Token *arg = new Token(argName,
+                         TokenType::FunctionArgument,
+                         ParsedTokens[ParsedIndex - 3]->lineNumber,
+                         ParsedTokens[ParsedIndex - 3]->charNumber);
+  arg->add_child(
+      "Value",
+      new Token(argValue,
+                TokenType::Expression,
+                ParsedTokens[ParsedIndex - 3]->lineNumber,
+                ParsedTokens[ParsedIndex - 3]->charNumber));
+  arg->add_child(
+      "Type",
+      new Token(argType, TokenType::Expression, ParsedTokens[ParsedIndex - 3]->lineNumber, ParsedTokens[ParsedIndex - 3]->charNumber));
 
   args->add_child(argName, arg);
 }
 
-inline Token* Lexer::Variable() {
-  Token *t = new Token(getVal(), TokenType::VariableDef);
+inline Token *Lexer::Variable()
+{
+  Token *t = new Token(getVal(), TokenType::VariableDef, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
   incPtr();
   Expects(ParseTokenType::Expression, "Variable Name");
-  t->add_child("Name", new Token(getVal(), TokenType::Expression));
+  t->add_child(
+      "Name",
+      new Token(
+          getVal(),
+          TokenType::Expression,
+          ParsedTokens[ParsedIndex]->lineNumber,
+          ParsedTokens[ParsedIndex]->charNumber));
 
   incPtr();
   Expects(ParseTokenType::EqualsSign, "EqualsSign");
+  incPtr();
 
-  
-  // t->add_child("Value", Value());
+  t->add_child("Value", Value());
 
   return t;
 }
 
-inline Token* Lexer::Value() {
-  if (getType() == ParseTokenType::Number) {
+inline Token *Lexer::Value()
+{
+  if (getType() == ParseTokenType::Number)
+  {
+    
+    Token* t = new Token(getVal(), TokenType::Number, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
 
+    return t;
+  } else {
+    std::cout << "Error: Invalid Value " << getVal() << std::endl;
+    exit(1);
   }
 }

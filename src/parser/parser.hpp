@@ -35,9 +35,9 @@ public:
     FileLength = FileData.length();
   }
 
-  vector<ParseToken*> ParseFile()
+  vector<ParseToken *> ParseFile()
   {
-    vector<ParseToken*> tokens = {};
+    vector<ParseToken *> tokens = {};
 
     for (this->FileIndex = 0; FileIndex < FileLength;)
     {
@@ -75,11 +75,6 @@ public:
       }
 
       FileIndex++;
-    }
-
-    for (int i = 0; i < tokens.size(); i++)
-    {
-      std::cout << "Line: " << tokens[i]->lineNumber << ", Character: " << tokens[i]->charNumber << ", Type: " << as_integer(tokens[i]->type) << ", Value: " << tokens[i]->value  << std::endl;
     }
 
     return tokens;
@@ -175,26 +170,40 @@ public:
     return x;
   }
 
-  int lineNumber() {
+  int lineNumber()
+  {
     int newlines = 0;
-    for (int i = 0; i < FileIndex; i++) {
-      if (FileData[i] == '\n') {
+    for (int i = 0; i < FileIndex; i++)
+    {
+      if (FileData[i] == '\n')
+      {
         newlines++;
       }
     }
     return newlines + 1;
   }
 
-  int charNumber() {
+  int charNumber()
+  {
     // Go backwards from fileIndex until you find a newline
     int newlines = 0;
     int i = FileIndex;
-    for (; i > 0; i--) {
-      if (FileData[i] == '\n') {
+    for (; i > 0; i--)
+    {
+      if (FileData[i] == '\n')
+      {
         newlines++;
       }
     }
     return FileIndex - i;
+  }
+
+  void debug(vector<ParseToken *> tokens)
+  {
+    for (auto token : tokens)
+    {
+      std::cout << "Line: " << token->lineNumber << ", Character: " << token->charNumber << ", Type: " << as_integer(token->type) << ", Value: " << token->value << std::endl;
+    }
   }
 };
 

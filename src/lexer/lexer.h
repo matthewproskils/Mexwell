@@ -12,12 +12,12 @@ using std::string, std::vector, std::pair, std::make_pair;
 class Lexer
 {
 private:
-  vector<pair<string, ParseTokenType>> ParsedTokens;
+  vector<ParseToken*> ParsedTokens;
   int ParsedIndex;
   vector<Token *> Lexed;
 
 public:
-  Lexer(vector<pair<string, ParseTokenType>> tokens)
+  Lexer(vector<ParseToken*> tokens)
   {
     ParsedTokens = tokens;
     ParsedIndex = -1;
@@ -42,9 +42,9 @@ public:
   {
     if (ParsedIndex >= ParsedTokens.size())
     {
-      std::cout << "Unexpected End of File";
+      std::cout << "Unexpected End of File at line " << ParsedTokens[ParsedIndex-1]->lineNumber << ParsedTokens[ParsedIndex-1]->charNumber << std::endl;
     }
-    return ParsedTokens[ParsedIndex].second;
+    return ParsedTokens[ParsedIndex]->type;
   }
 
   string getVal()
@@ -53,13 +53,18 @@ public:
     {
       std::cout << "Unexpected End of File";
     }
-    return ParsedTokens[ParsedIndex].first;
+    return ParsedTokens[ParsedIndex]->value;
   }
 
   string Expects(ParseTokenType ExpectType, string ExpectStr);
 
   Token *getLast()
   {
+    if (Lexed.size() == 0)
+    {
+      std::cout << "Huh" << std::endl;
+      exit(1);
+    }
     return Lexed[Lexed.size() - 1];
   }
 
