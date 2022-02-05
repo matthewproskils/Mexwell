@@ -103,7 +103,7 @@ inline Token *Lexer::Function()
   while (getType() != ParseTokenType::CloseCurlyBracket)
   {
     expr++;
-    t->add_child("" + expr, Expression());
+    t->add_child(string(1, expr), Expression());
   }
 
   return t;

@@ -2,7 +2,9 @@
 #include <map>
 #include <iostream>
 
-using std::string, std::map;
+using std::string;
+using std::map;
+
 #pragma once
 
 enum class TokenType

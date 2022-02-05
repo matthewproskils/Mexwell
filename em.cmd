@@ -1,0 +1,1 @@
+em++ main.cpp -s ERROR_ON_UNDEFINED_SYMBOLS=0 -o build/main.wasm

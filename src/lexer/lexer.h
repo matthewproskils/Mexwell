@@ -5,7 +5,10 @@
 #include "token.hpp"
 #include "../parser/token.hpp"
 
-using std::string, std::vector, std::pair, std::make_pair;
+using std::make_pair;
+using std::pair;
+using std::string;
+using std::vector;
 
 #pragma once
 

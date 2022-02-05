@@ -9,7 +9,13 @@
 #include <map>
 #include "token.hpp"
 
-using std::vector, std::string, std::regex, std::map, std::make_pair, std::pair;
+using std::make_pair;
+using std::map;
+using std::regex;
+using std::string;
+using std::pair;
+using std::vector;
+
 template <typename Enumeration>
 auto as_integer(Enumeration const value)
     -> typename std::underlying_type<Enumeration>::type
@@ -32,6 +38,12 @@ public:
     fName.push_back(*filename);
 
     FileData = ReadFile("main.mx");
+    FileLength = FileData.length();
+  }
+
+  Parser(string FileData)
+  {
+    this->FileData = FileData;
     FileLength = FileData.length();
   }
 
@@ -97,7 +109,7 @@ public:
 
   string parse_string()
   {
-    string Expression = "" + get();
+    string Expression = string(1, get());
     while (get() != Expression[0])
     {
       Expression.push_back(get());

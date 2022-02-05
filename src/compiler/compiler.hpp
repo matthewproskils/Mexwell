@@ -40,7 +40,6 @@ inline std::pair<string, Symbol *> Compiler::Variable(Token *t)
 
 inline void Compiler::incPtr()
 {
-  ParsedIndex;
   if (ParsedIndex > tokens.size())
   {
     std::cout << "Compiler Error, Unexpected End Of File" << std::endl;
