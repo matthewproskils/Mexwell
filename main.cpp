@@ -36,5 +36,7 @@ int main(int argc, char const *argv[])
     debugTokens(tokens[i]);
   }
 
+  Compiler* compiler = new Compiler(tokens);
+  compiler->compile();
   return 0;
 }

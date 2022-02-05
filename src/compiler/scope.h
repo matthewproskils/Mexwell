@@ -13,6 +13,8 @@ public:
   int type;
   string value;
   int line;
+  int character;
+  bool isConstant;
 
   enum Type
   {
@@ -25,7 +27,7 @@ public:
     TYPE
   };
 
-  Symbol(string name, Type type, int line) : name(name), type(type), line(line){};
+  Symbol(string name, Type type, int isConstant, int line, int chr) : name(name), type(type), line(line), isConstant(isConstant), character(chr) {};
 
 private:
 };
