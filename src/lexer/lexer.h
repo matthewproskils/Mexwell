@@ -20,7 +20,7 @@ public:
   Lexer(vector<ParseToken*> tokens)
   {
     ParsedTokens = tokens;
-    ParsedIndex = -1;
+    ParsedIndex = 0;
     Lexed = {};
   }
 
@@ -28,6 +28,7 @@ public:
 
   void incPtr()
   {
+    std::cout << ParsedIndex << std::endl;
     ParsedIndex++;
     if (ParsedIndex >= ParsedTokens.size())
     {

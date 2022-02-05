@@ -9,7 +9,8 @@ using std::string;
 enum class SymbolType
 {
   Number,
-  String
+  String,
+  Boolean
 };
 
 class Symbol
@@ -35,6 +36,7 @@ public:
   Symbol *get_symbol(string name);
   void print_symbols();
   void print_symbols(string prefix);
+  void is_restricted(string name);
 
 private:
   Scope *parent;

@@ -1,4 +1,5 @@
 #include "scope.h"
+#include "../lexer/lexer.hpp"
 
 #pragma once
 
@@ -22,10 +23,30 @@ inline Symbol* Scope::get_symbol(string name) {
 inline void Scope::print_symbols() {
   std::cout << "Scope: " << std::endl;
   for (auto i : this->symbols) {
-    std::cout << i.first << ": " << i.second->value << std::endl;
+    std::cout << i.first << ": " << i.second->value << ", type: " << to_underlying(i.second->type) << std::endl;
   }
 }
 
 inline void Scope::add_symbol(std::pair<string, Symbol*> s) {
   this->symbols.insert(s);
+}
+
+inline void is_restricted(string name) {
+  vector<string> restricted = {
+      "true",
+      "false",
+      "fun",
+      "var",
+      "let",
+      "if",
+      "else",
+      "while",
+      "for",
+      "in",
+      "return"};
+
+  if (std::find(restricted.begin(), restricted.end(), name) != restricted.end()) {
+    std::cout << "Compiler Error, Variable " << name << " Is Restricted." << std::endl;
+    exit(1);
+  }
 }

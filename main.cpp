@@ -26,11 +26,11 @@ int main(int argc, char const *argv[])
 {
   Parser *parser = new Parser("main.mx");
   vector<ParseToken*> Parsed = parser->ParseFile();
-  // parser->debug(Parsed);
+  parser->debug(Parsed);
 
   Lexer *lexer = new Lexer(Parsed);
   vector<Token *> tokens = lexer->LexFile();
-
+  
   for (size_t i = 0; i < tokens.size(); i++)
   {
     debugTokens(tokens[i]);

@@ -12,7 +12,7 @@ inline void Compiler::compile()
   Scope *current = global;
 
   ParsedIndex = 0;
-  
+
   while (ParsedIndex < tokens.size())
   {
     if (getType() == TokenType::VariableDef)
@@ -29,8 +29,7 @@ inline void Compiler::compile()
   global->print_symbols();
 }
 
-
-inline std::pair<string, Symbol *> Compiler::Variable(Token* t)
+inline std::pair<string, Symbol *> Compiler::Variable(Token *t)
 {
   bool isConstant = (t->value == "const");
   string varName = getChild(t, "Name")->second->value;
@@ -59,7 +58,7 @@ inline string Compiler::getValue()
   return tokens[ParsedIndex]->value;
 }
 
-inline std::map<string, Token *>::iterator Compiler::getChild(Token* te, string Child)
+inline std::map<string, Token *>::iterator Compiler::getChild(Token *te, string Child)
 {
   auto t = te->Children.find(Child);
   if (t != te->Children.end())
@@ -70,10 +69,22 @@ inline std::map<string, Token *>::iterator Compiler::getChild(Token* te, string 
   exit(1);
 }
 
-inline Symbol* Compiler::Value(Token* t, bool isConstant) {
-  if (t->type == TokenType::Number) {
+inline Symbol *Compiler::Value(Token *t, bool isConstant)
+{
+  if (t->type == TokenType::Number)
+  {
     return new Symbol(t->value, SymbolType::Number, isConstant);
-  } else {
+  }
+  else if (t->type == TokenType::String)
+  {
+    return new Symbol(t->value, SymbolType::String, isConstant);
+  }
+  else if (t->value == "true" || t->value == "false")
+  {
+    return new Symbol(t->value, SymbolType::Boolean, isConstant);
+  }
+  else
+  {
     std::cout << "Invalid Type?" << std::endl;
   }
 }

@@ -111,22 +111,25 @@ inline Token *Lexer::Function()
 
 inline vector<Token *> Lexer::LexFile()
 {
-  while (ParsedIndex > ParsedTokens.size())
+  while (ParsedIndex < ParsedTokens.size())
   {
-    incPtr();
-
-    if (getType() == ParseTokenType::FunDeclaration)
+    if (getVal() == "fun")
     {
       Lexed.push_back(Function());
     }
-    else if (getType() == ParseTokenType::VarDecl)
+    else if (getVal() == "let" || getVal() == "const" || getVal() == "var")
     {
       Lexed.push_back(Variable());
     }
+    else if (getType() == ParseTokenType::Semicolon)
+    {
+    } 
     else
     {
-      std::cout << "Error: Unexpected Token " << getVal();
+      std::cout << "Error: Unexpected Token " << getVal() << ", type: " << to_underlying(getType()) << std::endl;
+      exit(1);
     }
+    ParsedIndex++;
   }
 
   return Lexed;
@@ -175,8 +178,9 @@ inline Token *Lexer::Variable()
   incPtr();
   Expects(ParseTokenType::EqualsSign, "EqualsSign");
   incPtr();
-
   t->add_child("Value", Value());
+  incPtr();
+  Expects(ParseTokenType::Semicolon, "Semicolon");
 
   return t;
 }
@@ -185,12 +189,26 @@ inline Token *Lexer::Value()
 {
   if (getType() == ParseTokenType::Number)
   {
-    
-    Token* t = new Token(getVal(), TokenType::Number, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    Token *t = new Token(getVal(), TokenType::Number, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
 
     return t;
-  } else {
-    std::cout << "Error: Invalid Value " << getVal() << std::endl;
+  }
+  else if (getType() == ParseTokenType::String)
+  {
+    Token *t = new Token(getVal(), TokenType::String, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    return t;
+  } 
+  else if (getVal() == "true" || getVal() == "false")
+  {
+    Token *t = new Token(getVal(), TokenType::Boolean, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    return t;
+  }
+  else
+  {
+    std::cout << "Error: Invalid Value: " << getVal() << std::endl;
     exit(1);
   }
 }

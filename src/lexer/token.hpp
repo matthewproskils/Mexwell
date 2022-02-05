@@ -23,7 +23,8 @@ enum class TokenType
 
   //Types
   Number,
-  
+  String,
+  Boolean
 };
 
 class Token {

@@ -1,1 +1,3 @@
-let i = 0
+let i = "Hi";
+let j = true;
+let k = 1234;
