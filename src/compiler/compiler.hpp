@@ -3,7 +3,7 @@
 
 inline Compiler::Compiler(vector<Token *> tokens)
 {
-  tokens = tokens;
+  this->tokens = tokens;
 }
 
 inline void Compiler::compile()
@@ -12,29 +12,31 @@ inline void Compiler::compile()
   Scope *current = global;
 
   ParsedIndex = 0;
+  
   while (ParsedIndex < tokens.size())
   {
     if (getType() == TokenType::VariableDef)
     {
-      Variable(tokens[ParsedIndex]);
-      exit(1);
+      global->add_symbol(Variable(tokens[ParsedIndex]));
     }
     else
     {
       std::cout << "Unexpected Type, " << to_underlying(getType());
       exit(1);
     }
+    ParsedIndex++;
   }
+  global->print_symbols();
 }
+
 
 inline std::pair<string, Symbol *> Compiler::Variable(Token* t)
 {
-  bool isConstant = t->value() == "const";
+  bool isConstant = (t->value == "const");
   string varName = getChild(t, "Name")->second->value;
-  Symbol *var = Value(getChild(t, "Value")->second);
-  std::cout << varName;
+  Symbol *var = Value(getChild(t, "Value")->second, isConstant);
 
-  return std::make_pair("", nullptr);
+  return std::make_pair(varName, var);
 }
 
 inline void Compiler::incPtr()
@@ -68,8 +70,10 @@ inline std::map<string, Token *>::iterator Compiler::getChild(Token* te, string 
   exit(1);
 }
 
-inline Symbol* Compiler::Value(Token* t) {
+inline Symbol* Compiler::Value(Token* t, bool isConstant) {
   if (t->type == TokenType::Number) {
-    
+    return new Symbol(t->value, SymbolType::Number, isConstant);
+  } else {
+    std::cout << "Invalid Type?" << std::endl;
   }
 }

@@ -24,7 +24,7 @@ public:
 
   string getValue();
 
-  Symbol* Value(Token *t);
+  Symbol* Value(Token *t, bool isConstant);
 
   std::map<string, Token*>::iterator getChild(Token* te, string Child);
 };
