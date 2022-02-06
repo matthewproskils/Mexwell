@@ -31,11 +31,10 @@ public:
 
   void incPtr()
   {
-    std::cout << ParsedIndex << std::endl;
     ParsedIndex++;
     if (ParsedIndex >= ParsedTokens.size())
     {
-      std::cout << "Unexpected end of file" << std::endl;
+      std::cout << "Unexpected end of file, we expected something here" << std::endl;
       exit(1);
     }
   }
@@ -66,7 +65,7 @@ public:
   {
     if (Lexed.size() == 0)
     {
-      std::cout << "Huh" << std::endl;
+      std::cout << "Error: Get Last Called With Item In Vector" << std::endl;
       exit(1);
     }
     return Lexed[Lexed.size() - 1];

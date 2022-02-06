@@ -5,13 +5,26 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mexwell | Programming Language</title>
+  <link rel="stylesheet" href="style.css">
+  <title>Document</title>
 </head>
 
 <body>
-  <div id="textcontent"></div>
-  <!-- <script src="em.js"></script> -->
-  <script src="run.js"></script>
+  <div id="topbar">
+    <Name id="name">Mexwell Programming Language REPL</Name>
+    <button id="run" onclick="runAsm()">Run</button>
+  </div>
+  <div id="container">
+    <div id="t"></div>
+    <div id="side">
+      <div id="console" class="success"></div>
+    </div>
+  </div>
+
+  <script src="em.js"></script>
+  <script src="script.js"></script>
+  <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+  <script src="monaco-editor.js"></script>
 </body>
 
 </html>

@@ -117,7 +117,7 @@ inline vector<Token *> Lexer::LexFile()
     {
       Lexed.push_back(Function());
     }
-    else if (getVal() == "let" || getVal() == "const" || getVal() == "var")
+    else if (getVal() == "const" || getVal() == "var")
     {
       Lexed.push_back(Variable());
     }
@@ -137,7 +137,6 @@ inline vector<Token *> Lexer::LexFile()
 
 inline void Lexer::Args(Token *args)
 {
-  std::cout << to_underlying(getType()) << std::endl;
   string argType = Expects(ParseTokenType::Expression, "Expression or Close Parenthesis");
   incPtr();
   string argValue = Expects(ParseTokenType::Expression, "Expression");

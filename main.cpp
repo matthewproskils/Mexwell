@@ -1,13 +1,13 @@
-// #include "debug.hpp"
+#include "debug.hpp"
 
-// int main(int argc, char const *argv[])
-// {
-//   return 0;
-// }
+int main(int argc, char const *argv[])
+{
+  const char* filename = "main.mx";
+  MexFile(filename);
+  return 0;
+}
 
-// void runMex(int argc, char const *argv[], string mexData)
-// {
-//   Mex(mexData);
-// }
-
-int squarer(int num) {  return num * num;}
+void runMex(string mexData)
+{
+  Mex(mexData);
+}

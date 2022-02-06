@@ -1,52 +1,86 @@
-#include "scope.h"
-#include "../lexer/lexer.hpp"
+#include <string>
+#include <map>
 
 #pragma once
 
-inline Scope::Scope(Scope *parent) : parent(parent){};
+using std::map;
+using std::string;
 
-inline void Scope::add_symbol(string name, Symbol *s) {
-  this->symbols.insert(std::pair<string, Symbol*>(name, s));
+enum class SymbolType
+{
+  Number,
+  String,
+  Boolean
 };
 
-inline Symbol* Scope::get_symbol(string name) {
-  if (this->symbols.find(name) != this->symbols.end()) {
-    return this->symbols[name];
-  } else if (this->parent != nullptr) {
-    return this->parent->get_symbol(name);
-  } else {
-    std::cout << "Compiler Error, Variable " << name << " Does Not Exist." << std::endl;
-    exit(1);
+class Function 
+{
+  public:
+  string name;
+  vector<string> args;
+  vector<string> code;
+  vector<SymbolType> argsType;
+};
+
+class Symbol 
+{
+public:
+  string value;
+  SymbolType type;
+  bool isConstant;
+  int lineNumber;
+  int charNumber;
+  Symbol(string value, SymbolType type, bool isConstant)
+  {
+    this->value = value;
+    this->type = type;
+    this->isConstant = isConstant;
   }
 };
 
-inline void Scope::print_symbols() {
-  std::cout << "Scope: " << std::endl;
-  for (auto i : this->symbols) {
-    std::cout << i.first << ": " << i.second->value << ", type: " << to_underlying(i.second->type) << std::endl;
+class Scope 
+{
+public:
+  map<string, Symbol*> symbols;
+  vector<Scope*> scopes;
+  Scope* parent;
+  Scope()
+  {
+    this->parent = nullptr;
   }
-}
-
-inline void Scope::add_symbol(std::pair<string, Symbol*> s) {
-  this->symbols.insert(s);
-}
-
-inline void is_restricted(string name) {
-  vector<string> restricted = {
-      "true",
-      "false",
-      "fun",
-      "var",
-      "let",
-      "if",
-      "else",
-      "while",
-      "for",
-      "in",
-      "return"};
-
-  if (std::find(restricted.begin(), restricted.end(), name) != restricted.end()) {
-    std::cout << "Compiler Error, Variable " << name << " Is Restricted." << std::endl;
-    exit(1);
+  Scope(Scope* parent)
+  {
+    this->parent = parent;
   }
-}
+  void print_symbols()
+  {
+    std::cout << "Scope: " << std::endl;
+    for (auto s : this->symbols)
+    {
+      std::cout << "  " << s.first << std::endl;
+    }
+    for (auto s : this->scopes)
+    {
+      s->print_symbols();
+    }
+  }
+  void add_symbol(string name, Symbol* symbol)
+  {
+    this->symbols.insert(make_pair(name, symbol));
+  }
+  Symbol* get_symbol(string name)
+  {
+    if (this->symbols.count(name) > 0)
+    {
+      return this->symbols[name];
+    }
+    else if (this->parent != nullptr)
+    {
+      return this->parent->get_symbol(name);
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+};

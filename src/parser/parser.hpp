@@ -37,7 +37,7 @@ public:
     string fName;
     fName.push_back(*filename);
 
-    FileData = ReadFile("main.mx");
+    FileData = ReadFile(filename);
     FileLength = FileData.length();
   }
 
@@ -66,7 +66,7 @@ public:
         FileIndex += 2;
         tokens.push_back(new ParseToken(ParseTokenType::FunDeclaration, "fun", lineNumber(), charNumber()));
       }
-      else if (slice(3) == "var" || slice(3) == "let")
+      else if (slice(3) == "var")
       {
         tokens.push_back(new ParseToken(ParseTokenType::VarDecl, slice(3), lineNumber(), charNumber()));
         FileIndex += 2;
@@ -110,6 +110,7 @@ public:
   string parse_string()
   {
     string Expression = string(1, get());
+    FileIndex++;
     while (get() != Expression[0])
     {
       Expression.push_back(get());

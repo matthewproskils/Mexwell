@@ -1,1 +1,1 @@
-em++ main.cpp -s ERROR_ON_UNDEFINED_SYMBOLS=0 -o build/main.wasm
+em++ -std=c++17 -s ALLOW_MEMORY_GROWTH=1  -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']" -s EXPORTED_FUNCTIONS="['_runMex']" -s EXIT_RUNTIME=1 main.cc -o build/em.js

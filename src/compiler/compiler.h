@@ -19,6 +19,8 @@ public:
   void compile();
 
   std::pair<string, Symbol*> Variable(Token* t);
+
+  std::pair<string, Symbol*> Function(Token* t);
   
   TokenType getType();
 

@@ -24,7 +24,7 @@ void debugTokens(Token *t, int tab = 0)
   }
 }
 
-void MexFile(const char Filename)
+void MexFile(const char* Filename)
 {
   Parser *parser = new Parser("main.mx");
   vector<ParseToken *> Parsed = parser->ParseFile();

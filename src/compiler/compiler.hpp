@@ -19,6 +19,10 @@ inline void Compiler::compile()
     {
       global->add_symbol(Variable(tokens[ParsedIndex]));
     }
+    if (getType() == TokenType::FuncDeclaration)
+    {
+      global->add_symbol(Function(tokens[ParsedIndex]));
+    }
     else
     {
       std::cout << "Unexpected Type, " << to_underlying(getType());

@@ -1,0 +1,74 @@
+@import url('https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/cascadia-code.min.css');
+
+html {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Cascadia Code', sans-serif;
+}
+
+#container {
+  display: flex;
+}
+
+#t {
+  width: 60vw;
+  height: 95vh;
+  background-color: #000;
+  float: left;
+}
+
+#side {
+  width: 30vw;
+  height: 95vh;
+  float: right;
+}
+
+#run {
+  border: none;
+  background-color: rgb(87, 196, 100);
+  border-radius: 5px;
+  font-size: 1.3vw;
+  padding: 0.3vw;
+  width: 8vw;
+  margin-top: 0.25vh;
+}
+
+#run:hover {
+  background-color: rgb(63, 138, 72);
+  cursor: pointer;
+}
+
+#topbar {
+  width: 100vw;
+  height: 5vh;
+  background-color: rgb(69, 70, 78);
+}
+
+#name {
+  margin-left: 4vw;
+  margin-right: 20vw;
+  font-size: 1.3vw;
+  background-color: rgb(184, 184, 184);
+  padding: 0.3vw;
+  border-radius: 5px;
+}
+
+#console {
+  height: 95vh;
+  width: 40vw;
+  padding: 2vw;
+}
+
+.error {
+  background-color: rgb(184, 74, 74)
+}
+
+.success {
+  background-color: rgb(92, 92, 95);
+}
