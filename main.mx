@@ -1,3 +1,4 @@
-var i = "Hi";
-var j = true;
-var k = 1234;
+fun main(string lol) {
+  print("hi");
+  print("hi");
+}

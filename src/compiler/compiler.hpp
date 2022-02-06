@@ -1,5 +1,6 @@
 #include "compiler.h"
 #include "scope.hpp"
+#include <map>
 
 inline Compiler::Compiler(vector<Token *> tokens)
 {
@@ -19,13 +20,13 @@ inline void Compiler::compile()
     {
       global->add_symbol(Variable(tokens[ParsedIndex]));
     }
-    if (getType() == TokenType::FuncDeclaration)
+    else if (getType() == TokenType::FuncDeclaration)
     {
       global->add_symbol(Function(tokens[ParsedIndex]));
     }
     else
     {
-      std::cout << "Unexpected Type, " << to_underlying(getType());
+      std::cout << "Unexpected Type, " << to_underlying(getType()) << std::endl;
       exit(1);
     }
     ParsedIndex++;
@@ -90,4 +91,26 @@ inline Symbol *Compiler::Value(Token *t, bool isConstant)
   {
     std::cout << "Invalid Type?" << std::endl;
   }
+}
+
+inline std::pair<string, Symbol *> Compiler::Function(Token *t)
+{
+  std::map<string, string> args = {};
+
+  for (std::pair<string, Token*> a : t->get_child("FuncArgs")->Children) {
+    std::cout << a.first << std::endl;
+    args.insert(make_pair(a.second->get_child("Type")->value, a.second->get_child("Value")->value));
+  }
+
+  std::vector<Token *> code = {};
+
+  for (std::pair<string, Token*> a : t->get_child("expr")->Children) {
+    code.push_back(a.second);
+  }
+
+  SymbolFunction* f = new SymbolFunction(t->get_child("FuncName")->value, args, code);
+
+  Symbol *s = new Symbol(f);
+  
+  return std::pair<string, Symbol*>(t->get_child("FuncName")->value, s);
 }

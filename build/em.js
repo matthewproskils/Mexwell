@@ -4993,6 +4993,9 @@ var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__w
 var _runMex = Module["_runMex"] = createExportWrapper("runMex");
 
 /** @type {function(...*):?} */
+var _runMexDebug = Module["_runMexDebug"] = createExportWrapper("runMexDebug");
+
+/** @type {function(...*):?} */
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */

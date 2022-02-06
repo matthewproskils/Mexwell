@@ -9,7 +9,7 @@ using std::map;
 
 enum class TokenType
 {
-  // Function
+  // SymbolFunction
   FuncDeclaration,
   FuncArgumentWrapper,
   FunctionArgument,
@@ -43,12 +43,12 @@ public:
     Children.insert(std::pair<string, Token*>(name, token));
   }
 
-  std::pair<string, Token*> get_child(string name) {
+  Token* get_child(string name) {
     auto it = Children.find(name);
     if (it == Children.end()) {
       std::cout << "Error: Cannot find child " << name << std::endl;
     } else {
-      return *it;
+      return it->second;
     }
   }
 };

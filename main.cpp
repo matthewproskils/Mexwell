@@ -6,8 +6,3 @@ int main(int argc, char const *argv[])
   MexFile(filename);
   return 0;
 }
-
-void runMex(string mexData)
-{
-  Mex(mexData);
-}

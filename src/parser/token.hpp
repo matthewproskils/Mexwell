@@ -15,6 +15,7 @@ enum class ParseTokenType
   FunDeclaration, // 10
   EqualsSign, // 11
   Number, // 12
+  Comma, // 13
 };
 
 class ParseToken

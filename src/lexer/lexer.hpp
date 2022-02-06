@@ -31,28 +31,40 @@ inline Token *Lexer::FuncArgs()
 
 inline Token *Lexer::Expression()
 {
-
-  if (getType() == ParseTokenType::VarDecl)
+  string Expr1 = getVal();
+  incPtr();
+  if (getType() == ParseTokenType::Semicolon)
   {
-  }
-  else if (getType() == ParseTokenType::Expression)
-  {
-    string Expr1 = getVal();
+    // Standalone Variable
     incPtr();
-    if (getType() == ParseTokenType::Semicolon)
+    return new Token(Expr1, TokenType::Expression, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
+  }
+  else if (getType() == ParseTokenType::OpenBracket)
+  {
+    // Get Object
+  }
+  else if (getType() == ParseTokenType::OpenParenthesis)
+  {
+    // Func Call
+    incPtr();
+    Token *t = new Token(Expr1, TokenType::ExpressionCall, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
+
+    t->add_child("arg" + std::to_string(t->Children.size()), Value());
+    incPtr();
+
+    while (getType() != ParseTokenType::CloseParenthesis)
     {
-      // Standalone Variable
+      Expects(ParseTokenType::Comma, "Comma");
+      t->add_child("arg" + std::to_string(t->Children.size()), Value());
       incPtr();
-      return new Token(Expr1, TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
     }
-    else if (getType() == ParseTokenType::OpenBracket)
-    {
-      // Array
-    }
-    else if (getType() == ParseTokenType::OpenParenthesis)
-    {
-      // Call Function
-    }
+
+    Expects(ParseTokenType::CloseParenthesis, "Close Parenthesis");
+    incPtr();
+    Expects(ParseTokenType::Semicolon, "semicolon");
+    incPtr();
+
+    return t;
   }
 }
 
@@ -96,15 +108,23 @@ inline Token *Lexer::Function()
 
   incPtr();
 
-  Expects(ParseTokenType::OpenCurlyBracket, "Bracket");
   incPtr();
 
   int expr = 0;
-  while (getType() != ParseTokenType::CloseCurlyBracket)
+
+  Token *v = new Token("", TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+  if (getType() != ParseTokenType::CloseCurlyBracket)
   {
+    v->add_child("expr" + std::to_string(expr), Expression());
     expr++;
-    t->add_child(string(1, expr), Expression());
+    while (getType() != ParseTokenType::CloseCurlyBracket)
+    {
+      std::cout << expr << std::endl;
+      v->add_child("expr" + std::to_string(expr), Expression());
+      expr++;
+    }
   }
+  t->add_child("expr", v);
 
   return t;
 }
@@ -123,7 +143,7 @@ inline vector<Token *> Lexer::LexFile()
     }
     else if (getType() == ParseTokenType::Semicolon)
     {
-    } 
+    }
     else
     {
       std::cout << "Error: Unexpected Token " << getVal() << ", type: " << to_underlying(getType()) << std::endl;
@@ -141,21 +161,20 @@ inline void Lexer::Args(Token *args)
   incPtr();
   string argValue = Expects(ParseTokenType::Expression, "Expression");
   incPtr();
-
-  string argName = "Arg" + string(1, args->Children.size() + 1);
+  string argName = "Arg" + std::to_string(args->Children.size());
 
   Token *arg = new Token(argName,
                          TokenType::FunctionArgument,
                          ParsedTokens[ParsedIndex - 3]->lineNumber,
                          ParsedTokens[ParsedIndex - 3]->charNumber);
   arg->add_child(
-      "Value",
+      "Type",
       new Token(argValue,
                 TokenType::Expression,
                 ParsedTokens[ParsedIndex - 3]->lineNumber,
                 ParsedTokens[ParsedIndex - 3]->charNumber));
   arg->add_child(
-      "Type",
+      "Value",
       new Token(argType, TokenType::Expression, ParsedTokens[ParsedIndex - 3]->lineNumber, ParsedTokens[ParsedIndex - 3]->charNumber));
 
   args->add_child(argName, arg);
@@ -198,7 +217,7 @@ inline Token *Lexer::Value()
     Token *t = new Token(getVal(), TokenType::String, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
 
     return t;
-  } 
+  }
   else if (getVal() == "true" || getVal() == "false")
   {
     Token *t = new Token(getVal(), TokenType::Boolean, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);

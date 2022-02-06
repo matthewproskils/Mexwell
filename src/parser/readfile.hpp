@@ -17,5 +17,5 @@ string ReadFile(std::string name)
 
   file.close();
 
-  return text.substr(0, text.length());
+  return text.substr(0, text.length()-1);
 }

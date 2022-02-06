@@ -29,7 +29,7 @@ private:
   string FileData;
   int FileIndex;
   int FileLength;
-  vector<char> OneLongToken = {'{', '}', '(', ')', '[', ']', ';', '='};
+  vector<char> OneLongToken = {'{', '}', '(', ')', '[', ']', ';', '=', ','};
 
 public:
   Parser(const char *filename)
@@ -56,7 +56,7 @@ public:
       if (isspace(get()))
       {
       }
-      else if (std::count(OneLongToken.begin(), OneLongToken.end(), get()))
+      else if (std::find(OneLongToken.begin(), OneLongToken.end(), get()) != std::end(OneLongToken))
       {
         ParseTokenType x = (ParseTokenType)oneType();
         tokens.push_back(new ParseToken(x, string(1, get()), lineNumber(), charNumber()));
@@ -84,8 +84,10 @@ public:
       {
         tokens.push_back(new ParseToken(ParseTokenType::Expression, parse_expression(), lineNumber(), charNumber()));
         FileIndex--;
+      } else {
+        std::cout << "Unexpected " << get() << " at line " << lineNumber() << " char " << charNumber() << std::endl;
+        exit(1);
       }
-
       FileIndex++;
     }
 
@@ -128,7 +130,7 @@ public:
   string parse_expression()
   {
     string Expression = "";
-    while (isalpha(get()) || get() == '_' || get() == '2')
+    while (isalpha(get()) || get() == '_' || isdigit(get()))
     {
       Expression.push_back(get());
       FileIndex++;
@@ -176,6 +178,9 @@ public:
     case '=':
       x = ParseTokenType::EqualsSign;
       break;
+    case ',':
+      x = ParseTokenType::Comma;
+      break;
     default:
       std::cout << "Invalid token";
       exit(1);
@@ -199,13 +204,12 @@ public:
   int charNumber()
   {
     // Go backwards from fileIndex until you find a newline
-    int newlines = 0;
     int i = FileIndex;
     for (; i > 0; i--)
     {
       if (FileData[i] == '\n')
       {
-        newlines++;
+        break;
       }
     }
     return FileIndex - i;
