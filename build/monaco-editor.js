@@ -10,9 +10,17 @@ let proxy = URL.createObjectURL(new Blob([`
 
 require(["vs/editor/editor.main"], function () {
 	window.editor = monaco.editor.create(document.getElementById('t'), {
-		value: [
-			'var i = 0;'
-		].join('\n'),
+    value: 
+`fun test(string i) {
+  print(i);
+}
+
+fun main() {
+  test("hio");
+}
+
+var yee = "omg";
+print(yee);`,
 		language: 'kotlin',
 		theme: 'vs-dark'
 	});

@@ -1,4 +1,6 @@
-fun main(string lol) {
-  print("hi");
-  print("hi");
+fun test(string i) {
+    print(i);
+}
+fun main() {
+    test("hio");
 }

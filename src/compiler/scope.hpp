@@ -36,14 +36,33 @@ enum class SymbolType
   Function
 };
 
+class Symbol;
+
 class SymbolFunction
 {
 public:
   string name;
   map<string, string> args;
-  vector<Token*> code;
+  vector<Token *> code;
 
-  SymbolFunction(string name, map<string, string> args, vector<Token*> code) : name(name), args(args), code(code) {};
+  vector<SymbolType> nativeArgs;
+  bool isNative = false;
+  bool infArgs = true;
+  Symbol *(*nativeFunc)(vector<Symbol *>);
+
+  SymbolFunction(string name, map<string, string> args, vector<Token *> code) : name(name), args(args), code(code){};
+
+  // Native function Set number of args
+  SymbolFunction(string name, vector<SymbolType> args, Symbol *(*fun)(std::vector<Symbol *>)) : name(name), nativeFunc(fun), nativeArgs(args)
+  {
+    isNative = true;
+  };
+
+  // set infinite args
+  void setInfArgs()
+  {
+    infArgs = true;
+  };
 };
 
 class Symbol
@@ -130,7 +149,94 @@ public:
     }
     else
     {
-      return nullptr;
+      std::cout << "Symbol " << name << " not found" << std::endl;
+      exit(1);
     }
+  }
+
+  bool hasSymbol(string s)
+  {
+    if (this->symbols.count(s) > 0)
+    {
+      return true;
+    }
+    else if (this->parent != nullptr)
+    {
+      return this->parent->hasSymbol(s);
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  SymbolType get_type(string s)
+  {
+    if (s == "number")
+    {
+      return SymbolType::Number;
+    }
+    else if (s == "string")
+    {
+      return SymbolType::String;
+    }
+    else if (s == "bool")
+    {
+      return SymbolType::Boolean;
+    }
+    else if (s == "Function")
+    {
+      return SymbolType::Function;
+    }
+    else if (s == "number")
+    {
+      return SymbolType::Number;
+    }
+    else
+    {
+      std::cout << "Error: " << s << " is not a valid type" << std::endl;
+      exit(1);
+    };
+  }
+
+  SymbolType get_type(TokenType t)
+  {
+    if (t == TokenType::Number)
+    {
+      return SymbolType::Number;
+    }
+    else if (t == TokenType::String)
+    {
+      return SymbolType::String;
+    }
+    else if (t == TokenType::Boolean)
+    {
+      return SymbolType::Boolean;
+    }
+    else if (t == TokenType::Number)
+    {
+      return SymbolType::Number;
+    }
+    else
+    {
+      std::cout << "Error: " << to_underlying(t) << " is not a valid type" << std::endl;
+      exit(1);
+    };
+  }
+  
+  string type_string(SymbolType t) {
+    //type to string
+    if (t == SymbolType::Boolean) {
+      return "bool";
+    } else if (t == SymbolType::Number) {
+      return "number";
+    } else if (t == SymbolType::String) {
+      return "string";
+    } else if (t == SymbolType::Function) {
+      return "Function";
+    } else {
+      std::cout << "Error: " << to_underlying(t) << " is not a valid type" << std::endl;
+      exit(1);
+    };
   }
 };

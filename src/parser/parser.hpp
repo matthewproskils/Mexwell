@@ -113,17 +113,16 @@ public:
   {
     string Expression = string(1, get());
     FileIndex++;
-    while (get() != Expression[0])
+    while (FileIndex < FileLength && get() != Expression[0])
     {
       Expression.push_back(get());
-      if (get() == '\\')
-      {
-        FileIndex++;
-        Expression.push_back(get());
-      }
       FileIndex++;
     }
-    Expression.push_back(get());
+    if (get() != Expression[0]) {
+      std::cout << "Unterminated string at line " << lineNumber() << " char " << charNumber() << std::endl;
+      exit(1);
+    }
+    Expression.erase(0, 1);
     return Expression;
   }
 

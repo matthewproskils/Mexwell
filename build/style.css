@@ -63,6 +63,7 @@ html {
   height: 95vh;
   width: 40vw;
   padding: 2vw;
+  overflow-y: auto;
 }
 
 .error {

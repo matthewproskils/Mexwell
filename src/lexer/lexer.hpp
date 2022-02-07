@@ -36,7 +36,6 @@ inline Token *Lexer::Expression()
   if (getType() == ParseTokenType::Semicolon)
   {
     // Standalone Variable
-    incPtr();
     return new Token(Expr1, TokenType::Expression, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
   }
   else if (getType() == ParseTokenType::OpenBracket)
@@ -49,20 +48,22 @@ inline Token *Lexer::Expression()
     incPtr();
     Token *t = new Token(Expr1, TokenType::ExpressionCall, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
 
-    t->add_child("arg" + std::to_string(t->Children.size()), Value());
-    incPtr();
-
-    while (getType() != ParseTokenType::CloseParenthesis)
+    if (getType() != ParseTokenType::CloseParenthesis)
     {
-      Expects(ParseTokenType::Comma, "Comma");
       t->add_child("arg" + std::to_string(t->Children.size()), Value());
       incPtr();
+
+      while (getType() != ParseTokenType::CloseParenthesis)
+      {
+        Expects(ParseTokenType::Comma, "Comma");
+        t->add_child("arg" + std::to_string(t->Children.size()), Value());
+        incPtr();
+      }
     }
 
     Expects(ParseTokenType::CloseParenthesis, "Close Parenthesis");
     incPtr();
     Expects(ParseTokenType::Semicolon, "semicolon");
-    incPtr();
 
     return t;
   }
@@ -116,11 +117,12 @@ inline Token *Lexer::Function()
   if (getType() != ParseTokenType::CloseCurlyBracket)
   {
     v->add_child("expr" + std::to_string(expr), Expression());
+    incPtr();
     expr++;
     while (getType() != ParseTokenType::CloseCurlyBracket)
     {
-      std::cout << expr << std::endl;
       v->add_child("expr" + std::to_string(expr), Expression());
+      incPtr();
       expr++;
     }
   }
@@ -143,6 +145,10 @@ inline vector<Token *> Lexer::LexFile()
     }
     else if (getType() == ParseTokenType::Semicolon)
     {
+    }
+    else if (getType() == ParseTokenType::Expression)
+    {
+      Lexed.push_back(Expression());
     }
     else
     {
@@ -221,6 +227,12 @@ inline Token *Lexer::Value()
   else if (getVal() == "true" || getVal() == "false")
   {
     Token *t = new Token(getVal(), TokenType::Boolean, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    return t;
+  }
+  else if (getType() == ParseTokenType::Expression)
+  {
+    Token *t = new Token(getVal(), TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
 
     return t;
   }
