@@ -1,6 +1,4 @@
-fun test(string i) {
-    print(i);
-}
 fun main() {
-    test("hio");
-}
+  var i = "hi";
+  print(i);
+};

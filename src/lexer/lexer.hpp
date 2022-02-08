@@ -32,40 +32,51 @@ inline Token *Lexer::FuncArgs()
 inline Token *Lexer::Expression()
 {
   string Expr1 = getVal();
-  incPtr();
-  if (getType() == ParseTokenType::Semicolon)
+
+  if (Expr1 == "var" || Expr1 == "const")
   {
-    // Standalone Variable
-    return new Token(Expr1, TokenType::Expression, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
+    return Variable();
   }
-  else if (getType() == ParseTokenType::OpenBracket)
+  else
   {
-    // Get Object
-  }
-  else if (getType() == ParseTokenType::OpenParenthesis)
-  {
-    // Func Call
     incPtr();
-    Token *t = new Token(Expr1, TokenType::ExpressionCall, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
-
-    if (getType() != ParseTokenType::CloseParenthesis)
+    if (getType() == ParseTokenType::Semicolon)
     {
-      t->add_child("arg" + std::to_string(t->Children.size()), Value());
+    }
+    else if (getType() == ParseTokenType::OpenBracket)
+    {
+      // Get Object
+    }
+    else if (getType() == ParseTokenType::OpenParenthesis)
+    {
+      // Func Call
       incPtr();
+      Token *t = new Token(Expr1, TokenType::ExpressionCall, ParsedTokens[ParsedIndex - 2]->lineNumber, ParsedTokens[ParsedIndex - 2]->charNumber);
 
-      while (getType() != ParseTokenType::CloseParenthesis)
+      if (getType() != ParseTokenType::CloseParenthesis)
       {
-        Expects(ParseTokenType::Comma, "Comma");
         t->add_child("arg" + std::to_string(t->Children.size()), Value());
         incPtr();
+
+        while (getType() != ParseTokenType::CloseParenthesis)
+        {
+          Expects(ParseTokenType::Comma, "Comma");
+          t->add_child("arg" + std::to_string(t->Children.size()), Value());
+          incPtr();
+        }
       }
+
+      Expects(ParseTokenType::CloseParenthesis, "Close Parenthesis");
+      incPtr();
+      Expects(ParseTokenType::Semicolon, "semicolon");
+
+      return t;
     }
-
-    Expects(ParseTokenType::CloseParenthesis, "Close Parenthesis");
-    incPtr();
-    Expects(ParseTokenType::Semicolon, "semicolon");
-
-    return t;
+    else
+    {
+      std::cout << "Error: Expected expression, got " << getVal() << std::endl;
+      exit(1);
+    }
   }
 }
 
