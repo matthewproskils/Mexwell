@@ -78,6 +78,8 @@ public:
   Token *Variable();
 
   Token *Value();
-  
+
+  Token *CallExpr();
+
   void Args(Token *args);
 };

@@ -11,9 +11,9 @@
 
 using std::make_pair;
 using std::map;
+using std::pair;
 using std::regex;
 using std::string;
-using std::pair;
 using std::vector;
 
 template <typename Enumeration>
@@ -55,6 +55,13 @@ public:
     {
       if (isspace(get()))
       {
+      } else if (slice(2) == "//")
+      {
+        // comment
+        while (get() != '\n')
+        {
+          FileIndex++;
+        };
       }
       else if (std::find(OneLongToken.begin(), OneLongToken.end(), get()) != std::end(OneLongToken))
       {
@@ -63,8 +70,8 @@ public:
       }
       else if (slice(3) == "fun")
       {
-        FileIndex += 2;
         tokens.push_back(new ParseToken(ParseTokenType::FunDeclaration, "fun", lineNumber(), charNumber()));
+        FileIndex += 2;
       }
       else if (slice(3) == "var")
       {
@@ -84,7 +91,9 @@ public:
       {
         tokens.push_back(new ParseToken(ParseTokenType::Expression, parse_expression(), lineNumber(), charNumber()));
         FileIndex--;
-      } else {
+      }
+      else
+      {
         std::cout << "Unexpected " << get() << " at line " << lineNumber() << " char " << charNumber() << std::endl;
         exit(1);
       }
@@ -101,12 +110,7 @@ public:
 
   string slice(int len)
   {
-    return FileData.substr(FileIndex, FileIndex + len);
-  }
-
-  string until_end()
-  {
-    return FileData.substr(FileIndex, FileLength - 1);
+    return FileData.substr(FileIndex, len);
   }
 
   string parse_string()
@@ -118,7 +122,8 @@ public:
       Expression.push_back(get());
       FileIndex++;
     }
-    if (get() != Expression[0]) {
+    if (get() != Expression[0])
+    {
       std::cout << "Unterminated string at line " << lineNumber() << " char " << charNumber() << std::endl;
       exit(1);
     }

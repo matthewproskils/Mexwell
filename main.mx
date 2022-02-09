@@ -1,4 +1,3 @@
-fun main() {
-  var i = "hi";
-  print(i);
-};
+fun main() void {
+  var return = 0;
+}

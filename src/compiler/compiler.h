@@ -10,6 +10,8 @@ public:
   
   vector<Token *> tokens;
 
+  Scope* global;
+
   Compiler();
 
   ~Compiler();
@@ -28,9 +30,10 @@ public:
 
   Symbol* Value(Token *t, bool isConstant);
 
-  std::map<string, Token*>::iterator getChild(Token* te, string Child);
-
   Scope* funcArgs(Scope* global, Token* t);
 
   vector<Symbol* > nativeArgs(Scope* global, Token* t);
+
+  Symbol *ExprCall(Token* t, Scope* global);
 };
+
