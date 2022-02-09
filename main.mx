@@ -1,3 +1,7 @@
+fun test() string {
+  var return = "e";
+}
+
 fun main() void {
-  var return = 0;
+  print(test());
 }

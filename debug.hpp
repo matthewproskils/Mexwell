@@ -1,11 +1,12 @@
 #include "src/parser/parser.hpp"
 #include "src/lexer/lexer.hpp"
 #include "src/compiler/compiler.hpp"
+#include "src/util/std.hpp"
 
 Scope* Main(vector<Token*> tokens)
 {
   Compiler* compiler = new Compiler();
-  Scope* global = new Scope(nullptr);
+  Scope *global = mex_std();
   compiler->compile(global, tokens);
 
   if (global->hasSymbol("main") && global->get_symbol("main")->isFunction)

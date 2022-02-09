@@ -39,7 +39,7 @@ inline Symbol *Compiler::ExprCall(Token *t, Scope *global)
   {
     Scope *funcScope = funcArgs(global, t);
     Compiler *funCompiler = new Compiler();
-    funCompiler->compile(funcScope, global->get_symbol(getValue())->Func->code);
+    funCompiler->compile(funcScope, global->get_symbol(t->value)->Func->code);
 
     if (funcScope->hasSymbol("return"))
     {
@@ -47,7 +47,7 @@ inline Symbol *Compiler::ExprCall(Token *t, Scope *global)
     }
     else
     {
-      std::cout << "Compiler error, function did not return a value [return using 'var return = {insert value here}]'" << std::endl;
+      std::cout << "Compiler error, function " << t->value  << " did not return a value [return using 'var return = {insert value here}]'" << std::endl;
       exit(1);
     }
   }

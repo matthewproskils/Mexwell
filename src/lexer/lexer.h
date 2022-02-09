@@ -5,11 +5,6 @@
 #include "token.hpp"
 #include "../parser/token.hpp"
 
-using std::make_pair;
-using std::pair;
-using std::string;
-using std::vector;
-
 #pragma once
 
 class Lexer
@@ -20,56 +15,21 @@ private:
   vector<Token *> Lexed;
 
 public:
-  Lexer(vector<ParseToken*> tokens)
-  {
-    ParsedTokens = tokens;
-    ParsedIndex = 0;
-    Lexed = {};
-  }
+  Lexer(vector<ParseToken*> tokens);
 
   vector<Token *> LexFile();
 
-  void incPtr()
-  {
-    ParsedIndex++;
-    if (ParsedIndex >= ParsedTokens.size())
-    {
-      std::cout << "Unexpected end of file, we expected something here" << std::endl;
-      exit(1);
-    }
-  }
+  void incPtr();
 
   Token* Function();
 
-  ParseTokenType getType()
-  {
-    if (ParsedIndex >= ParsedTokens.size())
-    {
-      std::cout << "Unexpected End of File at line " << ParsedTokens[ParsedIndex-1]->lineNumber << ParsedTokens[ParsedIndex-1]->charNumber << std::endl;
-    }
-    return ParsedTokens[ParsedIndex]->type;
-  }
+  ParseTokenType getType();
 
-  string getVal()
-  {
-    if (ParsedIndex >= ParsedTokens.size())
-    {
-      std::cout << "Unexpected End of File";
-    }
-    return ParsedTokens[ParsedIndex]->value;
-  }
+  string getVal();
 
   string Expects(ParseTokenType ExpectType, string ExpectStr);
 
-  Token *getLast()
-  {
-    if (Lexed.size() == 0)
-    {
-      std::cout << "Error: Get Last Called With Item In Vector" << std::endl;
-      exit(1);
-    }
-    return Lexed[Lexed.size() - 1];
-  }
+  Token *getLast();
 
   Token *FuncArgs();
 

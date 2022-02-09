@@ -25,7 +25,6 @@ inline void Compiler::compile(Scope *global, vector<Token *> t)
     else if (getType() == TokenType::FuncDeclaration)
     {
       global->add_symbol(Function(t[ParsedIndex]));
-      global->print_symbols();
     }
     else if (getType() == TokenType::ExpressionCall)
     {
@@ -34,7 +33,6 @@ inline void Compiler::compile(Scope *global, vector<Token *> t)
     else
     {
       std::cout << "Unexpected Type, " << to_underlying(getType()) << std::endl;
-      debugTokens(t[ParsedIndex]);
       exit(1);
     }
     ParsedIndex++;
