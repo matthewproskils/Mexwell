@@ -6,31 +6,28 @@ inline Scope *Compiler::funcArgs(Scope *scope, Token *t)
 {
 
   // Get the function
-  Symbol *v = scope->get_symbol(t->value);
+  Symbol *v = scope->get_symbol(t);
 
   if (v->Func == nullptr)
   {
-    std::cout << "Compiler Error, Function not found: " << t->value << std::endl;
-    exit(1);
+    Error(t, "Function " + t->value + " does not exist", FileName);
   }
 
   SymbolFunction *f = v->Func;
 
   // Set Function Scope
-  Scope *funcScope = new Scope(scope);
+  Scope *funcScope = new Scope(scope, FileName);
 
   // Check if it is function
   if (f == nullptr)
   {
-    std::cout << "Compiler Error, " << t->value << " is not a function" << std::endl;
-    exit(1);
+    Error(t, "Variable " + t->value + " is not a function", FileName);
   }
 
   // Check if the number of arguments is correct
   if (f->args.size() != t->Children.size())
   {
-    std::cout << "Compiler Error, " << t->value << " takes " << f->args.size() << " arguments, " << t->get_child("FuncArgs")->Children.size() << " given" << std::endl;
-    exit(1);
+    Error(t, "Function " + t->value + " expects " + std::to_string(f->args.size()) + " arguments, got " + std::to_string(t->Children.size()), FileName);
   }
 
   // Check Type of arguments
@@ -43,18 +40,15 @@ inline Scope *Compiler::funcArgs(Scope *scope, Token *t)
   return funcScope;
 }
 
-
-
 inline vector<Symbol *> Compiler::nativeArgs(Scope *global, Token *t)
 {
   // Get the function
-  SymbolFunction *f = global->get_symbol(t->value)->Func;
+  SymbolFunction *f = global->get_symbol(t)->Func;
 
   // Check if argument size is correct
-  if (f->nativeArgs.size() != t->Children.size())
+  if (f->nativeArgs.size() != t->Children.size() && !f->infArgs)
   {
-    std::cout << "Compiler Error, " << t->value << " takes " << f->args.size() << " arguments, " << t->get_child("FuncArgs")->Children.size() << " given" << std::endl;
-    exit(1);
+    Error(t, "Function " + t->value + " expects " + std::to_string(f->nativeArgs.size()) + " arguments, got " + std::to_string(t->Children.size()), FileName);
   }
 
   // Get the arguments
@@ -62,18 +56,36 @@ inline vector<Symbol *> Compiler::nativeArgs(Scope *global, Token *t)
 
   int v = 0;
   // Check Type of arguments
-  for (auto i : t->Children)
+  if (f->infArgs)
   {
-    Symbol *s = Value(i.second, false);
-    if (s->type == f->nativeArgs[v])
+    for (auto i : t->Children)
     {
-      args.push_back(s);
-      v++;
+      Symbol *s = Value(i.second, false);
+      if (s->type == f->nativeArgs[0])
+      {
+        args.push_back(s);
+        v++;
+      }
+      else
+      {
+        Error(t, "Argument " + std::to_string(v) + " is not of type " + std::to_string(to_underlying(f->nativeArgs[v])), FileName);
+      }
     }
-    else
+  }
+  else
+  {
+    for (auto i : t->Children)
     {
-      std::cout << "Compiler Error, type " << to_underlying(f->nativeArgs[v]) << " expected" << std::endl;
-      exit(1);
+      Symbol *s = Value(i.second, false);
+      if (s->type == f->nativeArgs[v])
+      {
+        args.push_back(s);
+        v++;
+      }
+      else
+      {
+        Error(t, "Argument " + std::to_string(v) + " is not of type " + std::to_string(to_underlying(f->nativeArgs[v])), FileName);
+      }
     }
   }
   return args;

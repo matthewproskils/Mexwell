@@ -6,26 +6,36 @@ inline Token *Lexer::Value()
 {
   if (getType() == ParseTokenType::Number)
   {
-
     Token *t = new Token(getVal(), TokenType::Number, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    incPtr();
 
     return t;
   }
   else if (getType() == ParseTokenType::String)
   {
-    return new Token(getVal(), TokenType::String, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+    Token *t = new Token(getVal(), TokenType::String, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    incPtr();
+
+    return t;
   }
   else if (getVal() == "true" || getVal() == "false")
   {
-    return new Token(getVal(), TokenType::Boolean, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+    Token *t = new Token(getVal(), TokenType::Boolean, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+    incPtr();
+
+    return t;
   }
-  else if (getVal() == "void") 
+  else if (getVal() == "void")
   {
+    incPtr();
     return new Token("void", TokenType::Void, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
   }
   else if (getType() == ParseTokenType::Expression)
   {
-    if (ParsedTokens[ParsedIndex + 1]->type == ParseTokenType::OpenParenthesis)
+    if (getVal(1) == "(")
     {
       incPtr();
       return CallExpr();
@@ -34,21 +44,23 @@ inline Token *Lexer::Value()
     {
       Token *t = new Token(getVal(), TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
 
+      incPtr();
+
       return t;
     }
   }
   else
   {
-    std::cout << "Error: Invalid Value: " << getVal() << std::endl;
-    exit(1);
+    Error("", "Invalid Value " + getVal());
   }
 }
 
-inline string Lexer::getVal()
+inline string Lexer::getVal(int i)
 {
-  if (ParsedIndex >= ParsedTokens.size())
+  if (ParsedIndex+i >= ParsedTokens.size())
   {
-    std::cout << "Unexpected End of File";
+    ParsedIndex--;
+    Error("", "Unexpected End of File");
   }
-  return ParsedTokens[ParsedIndex]->value;
+  return ParsedTokens[ParsedIndex+i]->value;
 }

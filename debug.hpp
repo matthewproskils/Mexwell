@@ -3,24 +3,13 @@
 #include "src/compiler/compiler.hpp"
 #include "src/util/std.hpp"
 
-Scope* Main(vector<Token*> tokens)
+Scope* Main(vector<Token*> tokens, string filename)
 {
   Compiler* compiler = new Compiler();
-  Scope *global = mex_std();
+  Scope *global = mex_std(filename);
   compiler->compile(global, tokens);
 
-  if (global->hasSymbol("main") && global->get_symbol("main")->isFunction)
-  {
-    if (global->get_symbol("main")->Func->code.size() != 0)
-    {
-      compiler->compile(global, global->get_symbol("main")->Func->code);
-    }
-  }
-  else
-  {
-    std::cout << "Error: main function not found" << std::endl;
-    exit(1);
-  }
+  compiler->compile(global, global->get_symbol("main")->Func->code);
 
   return global;
 }
@@ -39,9 +28,9 @@ void MexFile(const char *Filename)
     debugTokens(tokens[i]);
   }
 
-  Scope* global = Main(tokens);
+  Scope* global = Main(tokens, lexer->FileName);
 
-  global->print_symbols();
+  // global->print_symbols();
 }
 
 void Mex(string data)
@@ -52,7 +41,7 @@ void Mex(string data)
   Lexer *lexer = new Lexer(Parsed);
   vector<Token *> tokens = lexer->LexFile();
 
-  Main(tokens);
+  Main(tokens, lexer->FileName);
 }
 
 void MexDebug(string data)
@@ -69,6 +58,6 @@ void MexDebug(string data)
     debugTokens(tokens[i]);
   }
 
-  Scope* global = Main(tokens);
+  Scope* global = Main(tokens, lexer->FileName);
   global->print_symbols();
 }

@@ -5,30 +5,31 @@
 inline void Lexer::incPtr()
 {
   ParsedIndex++;
-  if (ParsedIndex >= ParsedTokens.size())
+  if (ParsedIndex > ParsedTokens.size()+1)
   {
-    std::cout << "Unexpected end of file, we expected something here" << std::endl;
-    exit(1);
+    ParsedIndex--;
+    Error("", "Unexpected end of file, we expected something here");
   }
 }
 
 inline ParseTokenType Lexer::getType()
 {
-  if (ParsedIndex >= ParsedTokens.size())
+  if (ParsedIndex > ParsedTokens.size()+1)
   {
-    std::cout << "Unexpected End of File at line " << ParsedTokens[ParsedIndex-1]->lineNumber << ParsedTokens[ParsedIndex-1]->charNumber << std::endl;
+    ParsedIndex--;
+    Error("", "Unexpected end of file, we expected something here");
   }
   return ParsedTokens[ParsedIndex]->type;
 }
-inline string Lexer::Expects(ParseTokenType ExpectType, string ExpectStr)
+
+inline void Lexer::Expects(ParseTokenType ExpectType, string ExpectStr)
 {
   if (getType() == ExpectType)
   {
-    return getVal();
+    incPtr();
   }
   else
   {
-    std::cout << "Expected " << ExpectStr << " at line " << ParsedTokens[ParsedIndex]->lineNumber << " char " << ParsedTokens[ParsedIndex]->lineNumber << ", Got " << getVal() << std::endl;
-    exit(1);
+    Error(getVal(), " Expected " + ExpectStr + " but got " + getVal());
   }
 }

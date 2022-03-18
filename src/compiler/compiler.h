@@ -1,3 +1,4 @@
+#include "../util/error.hpp"
 #include "../lexer/lexer.hpp"
 #include "./scope.hpp"
 
@@ -5,35 +6,36 @@
 
 class Compiler
 {
-public:
+private:
   int ParsedIndex;
-  
+  string FileName;
+
+public:
   vector<Token *> tokens;
 
-  Scope* global;
+  Scope *global;
 
   Compiler();
 
   ~Compiler();
 
-  void incPtr();
+  void compile(Scope *scope, vector<Token *> tokens);
 
-  void compile(Scope* scope, vector<Token*> tokens);
+  std::pair<string, Symbol *> Variable(Token *t);
 
-  std::pair<string, Symbol*> Variable(Token* t);
+  std::pair<string, Symbol *> Function(Token *t);
 
-  std::pair<string, Symbol*> Function(Token* t);
-  
   TokenType getType();
 
-  string getValue();
+  Symbol *Value(Token *t, bool isConstant);
 
-  Symbol* Value(Token *t, bool isConstant);
+  Scope *funcArgs(Scope *global, Token *t);
 
-  Scope* funcArgs(Scope* global, Token* t);
+  vector<Symbol *> nativeArgs(Scope *global, Token *t);
 
-  vector<Symbol* > nativeArgs(Scope* global, Token* t);
+  Symbol *ExprCall(Token *t, Scope *global);
 
-  Symbol *ExprCall(Token* t, Scope* global);
+  void If(Token *t, Scope *global);
+
+  bool ConditionEval(Token *t, Scope *global);
 };
-

@@ -4,10 +4,10 @@
 
 inline void Lexer::Args(Token *args)
 {
-  string argType = Expects(ParseTokenType::Expression, "Expression or Close Parenthesis");
-  incPtr();
-  string argValue = Expects(ParseTokenType::Expression, "Expression");
-  incPtr();
+  string argType = getVal();
+  Expects(ParseTokenType::Expression, "Expression or Close Parenthesis");
+  string argValue = getVal();
+  Expects(ParseTokenType::Expression, "Expression");
   string argName = "Arg" + std::to_string(args->Children.size());
 
   Token *arg = new Token(argName,

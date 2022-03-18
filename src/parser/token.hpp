@@ -16,6 +16,10 @@ enum class ParseTokenType
   EqualsSign, // 11
   Number, // 12
   Comma, // 13
+  If, // 14
+  Else, // 15
+  Comparison, // 16
+  ElseIf, // 17
 };
 
 class ParseToken

@@ -27,7 +27,14 @@ enum class TokenType
   Number,
   String,
   Boolean,
-  Void
+  Void,
+
+  //If Statement
+  IfWrap,
+  If,
+  Else,
+  ConditionValue,
+  Compare
 };
 
 class Token {
@@ -48,6 +55,7 @@ public:
     auto it = Children.find(name);
     if (it == Children.end()) {
       std::cout << "Error: Cannot find child " << name << std::endl;
+      exit(1);
     } else {
       return it->second;
     }

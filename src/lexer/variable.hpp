@@ -10,15 +10,13 @@ inline Token *Lexer::Variable()
   t->add_child(
       "Name",
       new Token(
-          getVal(),
+          getVal(-1),
           TokenType::Expression,
           ParsedTokens[ParsedIndex]->lineNumber,
           ParsedTokens[ParsedIndex]->charNumber));
-
-  incPtr();
   Expects(ParseTokenType::EqualsSign, "EqualsSign");
-  incPtr();
   t->add_child("Value", Value());
+  Expects(ParseTokenType::Semicolon, "Semicolon");
 
   return t;
 }

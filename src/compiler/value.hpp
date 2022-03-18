@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include "../util/toUnderlying.hpp"
 
 #pragma once
 
@@ -22,11 +23,12 @@ inline Symbol *Compiler::Value(Token *t, bool isConstant)
   }
   else if (t->type == TokenType::Expression)
   {
-    return global->get_symbol(t->value);
+    return global->get_symbol(t);
   }
   else
   {
-    std::cout << "Invalid Type " << to_underlying(t->type) << "?" << std::endl;
-    exit(1);
+    std::cout << t->value << std::endl;
+    exit(0);
+    Error(t, "Invalid Value " + to_underlying(t->type), FileName);
   }
 }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+
 inline Token *Lexer::Expression()
 {
   if (getType() == ParseTokenType::VarDecl)
@@ -25,8 +26,7 @@ inline Token *Lexer::Expression()
     }
     else
     {
-      std::cout << "Error: Expected expression, got " << getVal() << std::endl;
-      exit(1);
+      Error(getVal(), "Expected Semicolon or Open Bracket or Open Parenthesis");
     }
   }
 }

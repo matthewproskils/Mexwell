@@ -30,6 +30,7 @@ private:
   int FileIndex;
   int FileLength;
   vector<char> OneLongToken = {'{', '}', '(', ')', '[', ']', ';', '=', ','};
+  vector<string> TwoLongComparisons = {"==", "!=", "<=", ">="};
 
 public:
   Parser(const char *filename)
@@ -63,6 +64,11 @@ public:
           FileIndex++;
         };
       }
+      else if (std::find(TwoLongComparisons.begin(), TwoLongComparisons.end(), slice(2)) != std::end(TwoLongComparisons))
+      {
+        tokens.push_back(new ParseToken(ParseTokenType::Comparison, slice(2), lineNumber(), charNumber()));
+        FileIndex ++;
+      }
       else if (std::find(OneLongToken.begin(), OneLongToken.end(), get()) != std::end(OneLongToken))
       {
         ParseTokenType x = (ParseTokenType)oneType();
@@ -77,6 +83,21 @@ public:
       {
         tokens.push_back(new ParseToken(ParseTokenType::VarDecl, slice(3), lineNumber(), charNumber()));
         FileIndex += 2;
+      }
+      else if (slice(2) == "if")
+      {
+        tokens.push_back(new ParseToken(ParseTokenType::If, slice(3), lineNumber(), charNumber()));
+        FileIndex++;
+      }
+      else if (slice(4) == "else")
+      {
+        tokens.push_back(new ParseToken(ParseTokenType::Else, slice(4), lineNumber(), charNumber()));
+        FileIndex += 3;
+      }
+      else if (slice(4) == "elif")
+      {
+        tokens.push_back(new ParseToken(ParseTokenType::ElseIf, slice(4), lineNumber(), charNumber()));
+        FileIndex += 3;
       }
       else if (isdigit(get()))
       {

@@ -6,6 +6,7 @@
 #include "util.hpp"
 #include "value.hpp"
 #include "variable.hpp"
+#include "if.hpp"
 #pragma once
 
 inline Compiler::Compiler() {}
@@ -30,10 +31,13 @@ inline void Compiler::compile(Scope *global, vector<Token *> t)
     {
       ExprCall(t[ParsedIndex], global);
     }
+    else if (getType() == TokenType::IfWrap)
+    {
+      If(t[ParsedIndex], global);
+    }
     else
     {
-      std::cout << "Unexpected Type, " << to_underlying(getType()) << std::endl;
-      exit(1);
+      Error(t[ParsedIndex], "Unexpected Token, expected 'variable declaration', 'function declaration', or 'expression call'", FileName);
     }
     ParsedIndex++;
   }

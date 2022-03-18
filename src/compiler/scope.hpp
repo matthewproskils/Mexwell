@@ -2,12 +2,12 @@
 #include <map>
 
 #include "../util/debugTokens.hpp"
+#include "../util/toUnderlying.hpp"
 
 #pragma once
 
 using std::map;
 using std::string;
-
 
 enum class SymbolType
 {
@@ -88,12 +88,15 @@ public:
   map<string, Symbol *> symbols;
   vector<Scope *> scopes;
   Scope *parent;
+  string FileName;
+
   Scope()
   {
     this->parent = nullptr;
   }
-  Scope(Scope *parent)
+  Scope(Scope *parent, string Filename)
   {
+    this->FileName = Filename;
     this->parent = parent;
   }
   void print_symbols()
@@ -143,15 +146,26 @@ public:
     {
       return this->symbols[name];
     }
-    else if (this->parent != nullptr)
+    if (this->parent != nullptr)
     {
       return this->parent->get_symbol(name);
     }
-    else
+
+    Error(name, "Symbol not found: " + name, FileName);
+  }
+
+  Symbol *get_symbol(Token *t)
+  {
+    if (this->symbols.count(t->value) > 0)
     {
-      std::cout << "Variable " << name << " not found" << std::endl;
-      exit(1);
+      return this->symbols[t->value];
     }
+
+    if (this->parent != nullptr)
+    {
+      return this->parent->get_symbol(t->value);
+    }
+    Error(t, "Variable " + t->value + " not found", FileName);
   }
 
   bool hasSymbol(string s)
@@ -160,101 +174,43 @@ public:
     {
       return true;
     }
-    else if (this->parent != nullptr)
+    if (this->parent != nullptr)
     {
       return this->parent->hasSymbol(s);
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
 
-  SymbolType get_type(string s)
+  SymbolType get_type(Token *s)
   {
-    if (s == "number")
+    if (s->value == "number")
     {
       return SymbolType::Number;
     }
-    else if (s == "string")
+    
+    if (s->value == "string")
     {
       return SymbolType::String;
     }
-    else if (s == "bool")
+    
+    if (s->value == "bool")
     {
       return SymbolType::Boolean;
     }
-    else if (s == "Function")
+
+    if (s->value == "Function")
     {
       return SymbolType::Function;
     }
-    else if (s == "number")
+    
+    if (s->value == "number")
     {
       return SymbolType::Number;
     }
-    else if (s == "void")
+    
+    if (s->value == "void")
     {
       return SymbolType::Void;
     }
-    else
-    {
-      std::cout << "Type " << s << " not found" << std::endl;
-      exit(1);
-    }
-  }
-
-  SymbolType get_type(TokenType t)
-  {
-    if (t == TokenType::Number)
-    {
-      return SymbolType::Number;
-    }
-    else if (t == TokenType::String)
-    {
-      return SymbolType::String;
-    }
-    else if (t == TokenType::Boolean)
-    {
-      return SymbolType::Boolean;
-    }
-    else if (t == TokenType::Number)
-    {
-      return SymbolType::Number;
-    }
-    else if (t == TokenType::Void)
-    {
-      return SymbolType::Void;
-    }
-    else
-    {
-      std::cout << "Error: " << to_underlying(t) << " is not a valid type" << std::endl;
-      exit(1);
-    };
-  }
-
-  string type_string(SymbolType t)
-  {
-    // type to string
-    if (t == SymbolType::Boolean)
-    {
-      return "bool";
-    }
-    else if (t == SymbolType::Number)
-    {
-      return "number";
-    }
-    else if (t == SymbolType::String)
-    {
-      return "string";
-    }
-    else if (t == SymbolType::Function)
-    {
-      return "Function";
-    }
-    else
-    {
-      std::cout << "Error: " << to_underlying(t) << " is not a valid type" << std::endl;
-      exit(1);
-    };
   }
 };

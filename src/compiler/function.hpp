@@ -20,7 +20,7 @@ inline std::pair<string, Symbol *> Compiler::Function(Token *t)
     code.push_back(a.second);
   }
 
-  SymbolFunction *f = new SymbolFunction(t->get_child("FuncName")->value, args, global->get_type(t->get_child("ReturnType")->value), code);
+  SymbolFunction *f = new SymbolFunction(t->get_child("FuncName")->value, args, global->get_type(t->get_child("ReturnType")), code);
 
   Symbol *s = new Symbol(f);
 
@@ -30,16 +30,16 @@ inline std::pair<string, Symbol *> Compiler::Function(Token *t)
 
 inline Symbol *Compiler::ExprCall(Token *t, Scope *global)
 {
-  if (global->get_symbol(t->value)->Func->isNative)
+  if (global->get_symbol(t)->Func->isNative)
   {
     vector<Symbol *> args = nativeArgs(global, t);
-    return global->get_symbol(t->value)->Func->nativeFunc(args);
+    return global->get_symbol(t)->Func->nativeFunc(args);
   }
   else
   {
     Scope *funcScope = funcArgs(global, t);
     Compiler *funCompiler = new Compiler();
-    funCompiler->compile(funcScope, global->get_symbol(t->value)->Func->code);
+    funCompiler->compile(funcScope, global->get_symbol(t)->Func->code);
 
     if (funcScope->hasSymbol("return"))
     {
@@ -47,8 +47,7 @@ inline Symbol *Compiler::ExprCall(Token *t, Scope *global)
     }
     else
     {
-      std::cout << "Compiler error, function " << t->value  << " did not return a value [return using 'var return = {insert value here}]'" << std::endl;
-      exit(1);
+      Error(t, "Function " + t->value + " did not return a value [return using 'var return = {insert value here}]'", FileName);
     }
   }
 }

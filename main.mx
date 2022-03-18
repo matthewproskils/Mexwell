@@ -1,7 +1,12 @@
-fun test() string {
-  var return = "e";
-}
-
 fun main() void {
-  print(test());
+  print("What is your name?");
+  var name = input();
+  print("Hello, ", name, "!");
+  print("Type: 'quit' to exit.");
+  var q = input();
+  if (q == "quit") {
+    print("Goodbye!");
+  } else {
+    print("You typed: ", q);
+  }
 }

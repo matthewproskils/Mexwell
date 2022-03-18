@@ -15,7 +15,9 @@ private:
   vector<Token *> Lexed;
 
 public:
-  Lexer(vector<ParseToken*> tokens);
+  string FileName;
+
+  Lexer(vector<ParseToken*> tokens, string File_Name = "VM");
 
   vector<Token *> LexFile();
 
@@ -25,9 +27,9 @@ public:
 
   ParseTokenType getType();
 
-  string getVal();
+  string getVal(int i = 0);
 
-  string Expects(ParseTokenType ExpectType, string ExpectStr);
+  void Expects(ParseTokenType ExpectType, string ExpectStr);
 
   Token *getLast();
 
@@ -42,4 +44,16 @@ public:
   Token *CallExpr();
 
   void Args(Token *args);
+
+  void Error(string Token, string Note);
+
+  Token *Lex();
+
+  Token *If();
+
+  Token *ConditionValue();
+
+  Token *FunctionBody();
+
+  Token *GetCondition();
 };

@@ -1,7 +1,28 @@
 #include "lexer.h"
+#include "../util/debugTokens.hpp"
 
 #pragma once
 
+inline Token *Lexer::FunctionBody()
+{
+  Token *v = new Token("", TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
+
+  int expr = 0;
+  // Expr = Count of expressions
+  while (getType() != ParseTokenType::CloseCurlyBracket)
+  {
+    Token *t = Lex();
+    if (t != nullptr)
+    {
+      v->add_child("expr" + std::to_string(expr), t);
+      expr++;
+    }
+  }
+
+  Expects(ParseTokenType::CloseCurlyBracket, "Close Curly Bracket");
+
+  return v;
+}
 inline Token *Lexer::Function()
 {
   Token *t = new Token(
@@ -11,54 +32,31 @@ inline Token *Lexer::Function()
       ParsedTokens[ParsedIndex]->charNumber);
   incPtr();
 
+  Expects(ParseTokenType::Expression, "Expression");
+
   t->add_child(
       "FuncName",
       new Token(
-          Expects(ParseTokenType::Expression, "Expression"),
+          ParsedTokens[ParsedIndex - 1]->value,
           TokenType::FuncDeclaration,
-          ParsedTokens[ParsedIndex]->lineNumber,
-          ParsedTokens[ParsedIndex]->charNumber));
-  incPtr();
+          ParsedTokens[ParsedIndex - 1]->lineNumber,
+          ParsedTokens[ParsedIndex - 1]->charNumber));
 
   Expects(ParseTokenType::OpenParenthesis, "Open Parenthesis");
-  incPtr();
 
   t->add_child(
       "FuncArgs",
       FuncArgs());
 
   Expects(ParseTokenType::CloseParenthesis, "Close Parenthesis");
-  incPtr();
 
   t->add_child(
       "ReturnType",
       Value());
 
-  incPtr();
+  Expects(ParseTokenType::OpenCurlyBracket, "Open Curly Bracket");
 
-  int expr = 0;
-
-  Token *v = new Token("", TokenType::Expression, ParsedTokens[ParsedIndex]->lineNumber, ParsedTokens[ParsedIndex]->charNumber);
-
-  incPtr();
-  if (getType() != ParseTokenType::CloseCurlyBracket)
-  {
-    v->add_child("expr" + std::to_string(expr), Expression());
-    incPtr();
-    Expects(ParseTokenType::Semicolon, "semicolon");
-    incPtr();
-    expr++;
-    while (getType() != ParseTokenType::CloseCurlyBracket)
-    {
-      v->add_child("expr" + std::to_string(expr), Expression());
-      incPtr();
-      Expects(ParseTokenType::Semicolon, "semicolon");
-      incPtr();
-      expr++;
-    }
-  }
-
-  t->add_child("expr", v);
+  t->add_child("expr", FunctionBody());
 
   return t;
 }
